@@ -1,6 +1,7 @@
 //import { loadMicroApp } from './qiankun/src'
 
 import { setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
+import type { envs } from './registry/environment-entries'
 
 let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 
@@ -8,12 +9,20 @@ let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
     setLoadMicroApp()
 } */
 
-export async function setLoadMicroApp(importerFn: () => Promise<typeof import('asma-qiankun')>) {
+export async function setLoadMicroApp(
+    importerFn: () => Promise<typeof import('asma-qiankun')>,
+    env: envs,
+    dev_mode: boolean,
+) {
     if (!loadASMAMicroAPP) {
-        await setLoadMicroAppLoc(importerFn())
+        await setLoadMicroAppLoc(importerFn(), env, dev_mode)
     }
 }
-async function setLoadMicroAppLoc(asma_qiankun_promise: Promise<typeof import('asma-qiankun')>) {
+async function setLoadMicroAppLoc(
+    asma_qiankun_promise: Promise<typeof import('asma-qiankun')>,
+    env: envs,
+    dev_mode: boolean,
+) {
     if (!loadASMAMicroAPP) {
         const asma_qiankun = await asma_qiankun_promise
         const singleSpa = await import('single-spa')
@@ -24,16 +33,20 @@ async function setLoadMicroAppLoc(asma_qiankun_promise: Promise<typeof import('a
 
         window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
 
-        setAsmaRegistrableAppsNew([
-            'adopus-app-directory',
-            'asma-app-notification',
-            'asma-app-artifact',
-            'asma-app-calendar',
-            'asma-app-chat',
-            'asma-app-consents',
-            'asma-app-directory',
-            'asma-app-office',
-        ])
+        setAsmaRegistrableAppsNew(
+            [
+                'adopus-app-directory',
+                'asma-app-notification',
+                'asma-app-artifact',
+                'asma-app-calendar',
+                'asma-app-chat',
+                'asma-app-consents',
+                'asma-app-directory',
+                'asma-app-office',
+            ],
+            env,
+            dev_mode,
+        )
         singleSpa.setBootstrapMaxTime(5000, false, 15000)
         singleSpa.setMountMaxTime(5000, false, 15000)
         singleSpa.setUnmountMaxTime(5000, true, 15000)
