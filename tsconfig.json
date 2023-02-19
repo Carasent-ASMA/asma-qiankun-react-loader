@@ -79,6 +79,6 @@
         "importsNotUsedAsValues": "error",
         "useUnknownInCatchVariables": false
     },
-    "include": ["src", "lib/interfaces"],
+    "include": ["src", "lib/interfaces", "index.ts"],
     "exclude": ["node_modules", "lib"]
 }

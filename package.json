@@ -10,7 +10,7 @@
     "license": "MIT",
     "author": "",
     "type": "module",
-    "main": "lib/src/index.js",
+    "main": "lib/index.js",
     "types": "lib",
     "scripts": {
         "build": "npx tsc && npx tsc -p ."
