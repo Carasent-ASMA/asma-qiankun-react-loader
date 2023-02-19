@@ -47,7 +47,7 @@ async function setLoadMicroAppLoc(
             env,
             dev_mode,
         )
-        singleSpa.setBootstrapMaxTime(5000, false, 15000)
+        singleSpa.setBootstrapMaxTime(8000, false, 15000)
         singleSpa.setMountMaxTime(5000, false, 15000)
         singleSpa.setUnmountMaxTime(5000, true, 15000)
 
