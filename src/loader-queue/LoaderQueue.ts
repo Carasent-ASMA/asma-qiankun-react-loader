@@ -116,7 +116,7 @@ function initLoadMicroAppFn(
             entry: app.entry,
             container: containerRef.current!,
             props: { ...props, occurence: occurences[app.name] },
-        })
+        },{})
 
         setLoadedApp(loadedapp)
 

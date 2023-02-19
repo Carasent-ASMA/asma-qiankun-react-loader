@@ -1,1 +1,1 @@
-{"version":3,"file":"loadASMAMicroApp.d.ts","sourceRoot":"","sources":["../../src/loadASMAMicroApp.ts"],"names":[],"mappings":"AAIA,QAAA,IAAI,gBAAgB,4CAAiD,CAAA;AAMrE,wBAAsB,eAAe,CAAC,UAAU,EAAE,MAAM,OAAO,CAAC,cAAc,cAAc,CAAC,CAAC,iBAI7F;AAyBD,OAAO,EAAE,gBAAgB,EAAE,CAAA"}
+{"version":3,"file":"loadASMAMicroApp.d.ts","sourceRoot":"","sources":["../../src/loadASMAMicroApp.ts"],"names":[],"mappings":"AAIA,QAAA,IAAI,gBAAgB,4CAAiD,CAAA;AAMrE,wBAAsB,eAAe,CAAC,UAAU,EAAE,MAAM,OAAO,CAAC,cAAc,cAAc,CAAC,CAAC,iBAI7F;AA6BD,OAAO,EAAE,gBAAgB,EAAE,CAAA"}
