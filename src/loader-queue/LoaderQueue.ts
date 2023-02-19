@@ -1,12 +1,42 @@
-import type { RefObject } from 'react'
-import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 import type { Entry, MicroApp } from 'asma-qiankun'
+import { loadASMAMicroAPP } from 'asma-qiankun/src/loadASMAMicroApp'
+import { remove } from 'lodash'
+import type { RefObject } from 'react'
 
-const LoaderQueue: IAppLoaderQueue = {}
+export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string) {
+    /*   const micro_app_loader = LoaderQueue[app_name]?.find((l) => l.id === loader_to_resolve_id)
 
-const occurences: Record<string, number> = {}
+    if (micro_app_loader && !micro_app_loader?.micro_app) {
+        micro_app_loader.init().unmount()
+    } */
 
-function incrementOccurence(app_name: string) {
+    remove(LoaderQueue[app_name] || [], (l) => l.id === loader_to_resolve_id)
+
+    if (!LoaderQueue[app_name]?.length) {
+        areLoadersInProcess[app_name] = false
+    }
+}
+
+async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader) {
+    micro_app_loader.micro_app = micro_app_loader.init()
+
+    if (app_name === 'asma-app-calendar') {
+        console.log(`${micro_app_loader.id} `, micro_app_loader)
+    }
+    await micro_app_loader.micro_app?.bootstrapPromise
+        .catch(() => {
+            removeLoaderToResolve(app_name, micro_app_loader.id)
+        })
+        .finally(() => {
+            removeLoaderToResolve(app_name, micro_app_loader.id)
+        })
+}
+
+export const LoaderQueue: IAppLoaderQueue = {}
+
+export const occurences: Record<string, number> = {}
+
+export function incrementOccurence(app_name: string) {
     if (!occurences[app_name]) {
         occurences[app_name] = 0
     }
@@ -27,7 +57,8 @@ interface IAppLoaderQueue {
 
 interface ILoader {
     id: string
-    init: () => MicroApp | null
+    init: () => MicroApp
+    micro_app?: MicroApp
 }
 
 export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
@@ -44,7 +75,7 @@ export interface IMfComponentLoaderInternal<T> extends Pick<React.HTMLAttributes
 
 export type IMicroAppProps<T> = { component_path: string } & T
 
-const areLoadersInProcess = {} as Record<string, boolean>
+export const areLoadersInProcess = {} as Record<string, boolean>
 
 async function resolveLoaders(app_name: string) {
     areLoadersInProcess[app_name] = true
@@ -53,50 +84,41 @@ async function resolveLoaders(app_name: string) {
         const loader_to_resolve = LoaderQueue[app_name]?.[0]
 
         if (loader_to_resolve) {
-            await loader_to_resolve.init()?.bootstrapPromise
+            await resolveMicroAppLoader(app_name, loader_to_resolve)
+            /*  loader_to_resolve.micro_app = loader_to_resolve.init() || undefined
 
-            const idx = LoaderQueue[app_name]?.findIndex((l) => l.id === loader_to_resolve.id)
-
-            if (idx && idx >= 0) {
-                LoaderQueue[app_name]?.splice(idx, 1)
-            }
+            await loader_to_resolve.micro_app?.bootstrapPromise
+                .catch(() => {
+                    removeLoaderToResolve(app_name, loader_to_resolve.id)
+                })
+                .finally(() => {
+                    removeLoaderToResolve(app_name, loader_to_resolve.id)
+                }) */
         }
 
-        if (!LoaderQueue[app_name]?.length) {
+        /*  if (!LoaderQueue[app_name]?.length) {
             areLoadersInProcess[app_name] = false
-        }
+        } */
     }
 }
 
-let initLoadMicroApp: typeof initLoadMicroAppFn
+const initLoadMicroApp = initLoadMicroAppFn
 
 function initLoadMicroAppFn(
     app: { name: string; entry: Entry },
     props: IMicroAppProps<{}>,
     containerRef: RefObject<HTMLDivElement>,
     setLoadedApp: (lApp: MicroApp) => void,
-    abortController: AbortController,
 ) {
     function init() {
-        let loadedapp: MicroApp | null = null
+        const loadedapp = loadASMAMicroAPP({
+            name: app.name,
+            entry: app.entry,
+            container: containerRef.current!,
+            props: { ...props, occurence: occurences[app.name] },
+        })
 
-        if (containerRef.current) {
-            loadedapp = loadASMAMicroAPP(
-                {
-                    name: app.name,
-                    entry: app.entry,
-                    container: containerRef.current,
-                    props: { ...props, occurence: occurences[app.name] },
-                },
-                {
-                    fetch: (input: RequestInfo | URL, init?: RequestInit | undefined) =>
-                        window.fetch(input, { ...init, signal: abortController.signal }),
-                },
-            )
-        }
-        if (loadedapp) {
-            setLoadedApp(loadedapp)
-        }
+        setLoadedApp(loadedapp)
 
         return loadedapp
     }
@@ -109,13 +131,13 @@ function initLoadMicroAppFn(
         resolveLoaders(app.name)
     }
 }
-declare global {
+/* declare global {
     interface Window {
         __INIT_LOAD_MICROAPP__?: typeof initLoadMicroAppFn
     }
-}
+} */
 
-initLoadMicroApp = window.__INIT_LOAD_MICROAPP__ || initLoadMicroAppFn
+//initLoadMicroApp = /* window.__INIT_LOAD_MICROAPP__ || */ initLoadMicroAppFn
 if (!window.__INIT_LOAD_MICROAPP__) {
     window.__INIT_LOAD_MICROAPP__ = initLoadMicroApp
 }

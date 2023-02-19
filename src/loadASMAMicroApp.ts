@@ -4,12 +4,18 @@ import { setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
 
 let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 
-if (!loadASMAMicroAPP) {
+/* if (!loadASMAMicroAPP) {
     setLoadMicroApp()
-}
-export async function setLoadMicroApp() {
+} */
+
+export async function setLoadMicroApp(importerFn: () => Promise<typeof import('asma-qiankun')>) {
     if (!loadASMAMicroAPP) {
-        const asma_qiankun = await import('asma-qiankun')
+        await setLoadMicroAppLoc(importerFn())
+    }
+}
+async function setLoadMicroAppLoc(asma_qiankun_promise: Promise<typeof import('asma-qiankun')>) {
+    if (!loadASMAMicroAPP) {
+        const asma_qiankun = await asma_qiankun_promise
 
         loadASMAMicroAPP = asma_qiankun.loadMicroApp
 

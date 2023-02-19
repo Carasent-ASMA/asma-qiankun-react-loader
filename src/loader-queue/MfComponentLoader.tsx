@@ -1,7 +1,8 @@
-import { useEffect, useRef /* , useState */ } from 'react'
-import type { MicroApp, ObjectType } from 'asma-qiankun'
+import { useEffect, useRef } from 'react'
 
-import { IMfComponentLoader, IMfComponentLoaderInternal, initLoadMicroApp } from './LoaderQueue'
+import type { IMfComponentLoader, IMfComponentLoaderInternal, MicroApp, ObjectType } from 'asma-qiankun'
+
+import { incrementOccurence, initLoadMicroApp, LoaderQueue, removeLoaderToResolve } from './LoaderQueue'
 
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,
@@ -9,43 +10,33 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     className,
     placeholder = 'mf original',
 }: IMfComponentLoaderInternal<T>) {
-    const effectCalled = useRef<boolean>(false)
-
     const containerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (effectCalled.current) {
-            return
-        }
-
-        effectCalled.current = true
-        const abortController = new AbortController()
-
+        incrementOccurence(app.name)
         if (!app) {
             console.error('No micro app was provied! microapp components wont render!`')
             return
         }
 
-        let loadedapp: MicroApp | undefined
+        let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
 
-        initLoadMicroApp(
-            app,
-            props,
-            containerRef,
-            (lApp) => {
-                loadedapp = lApp
-            },
-            abortController,
-        )
+        initLoadMicroApp(app, props, containerRef, (lApp) => {
+            loadedapp = lApp
+        })
+        //console.log(`${app.name} mounting... ${props.component_path} micro_app:`, loadedapp!)
 
         return () => {
-            abortController.abort()
+            const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
 
-            if (!loadedapp) {
-                console.warn('loadedapp is undefined!')
-                return
-            }
-            loadedapp.unmount()
+            loadedapp =
+                loadedapp ||
+                loader?.micro_app ||
+                LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init()
+
+            loadedapp?.unmount()
+
+            removeLoaderToResolve(app.name, props.component_path)
         }
     }, [])
 

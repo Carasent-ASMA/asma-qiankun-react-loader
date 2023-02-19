@@ -19,7 +19,7 @@ export function getAsmaRegistrableApps() {
     }
     return asmaRegistrableApps
 }
-export async function setAsmaRegistrableAppsNew(
+export function setAsmaRegistrableAppsNew(
     reg_app_names: IMicroAppRegistryNames[],
     env: envs = 'cloud',
     devtools = false,
@@ -65,7 +65,7 @@ async function setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devtoo
         document.body.appendChild(element)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        const _ = await import('qiankun-overrides')
+        import('qiankun-overrides')
 
         const imo:
             | {
