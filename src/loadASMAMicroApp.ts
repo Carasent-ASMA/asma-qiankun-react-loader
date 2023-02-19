@@ -33,7 +33,7 @@ async function setLoadMicroAppLoc(
 
         window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
 
-        setAsmaRegistrableAppsNew(
+        await setAsmaRegistrableAppsNew(
             [
                 'adopus-app-directory',
                 'asma-app-notification',
