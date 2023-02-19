@@ -1,14 +1,14 @@
 {
-    "name": "@asma-qiankun/react-loader",
-    "version": "",
+    "name": "asma-qiankun-react-loader",
+    "version": "0.0.1",
     "description": "helper functions form asma-qiankun",
     "keywords": [],
     "repository": {
         "type": "git",
-        "url": "https://avanssoma@dev.azure.com/avanssoma/Arbeidoginkludering/_git/asma-app-lib-helpers"
+        "url": "https://avanssoma@dev.azure.com/avanssoma/Arbeidoginkludering/_git/asma-qiankun-react-loader"
     },
     "license": "MIT",
-    "author": "",
+    "author": "IE",
     "type": "module",
     "main": "lib/index.js",
     "types": "lib",
