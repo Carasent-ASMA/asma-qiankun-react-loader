@@ -12,7 +12,6 @@ declare global {
         __INJECTED_PUBLIC_PATH_BY_QIANKUN__?: string | Record<string, string>
         __QIANKUN_DEVELOPMENT__?: boolean
         Zone?: CallableFunction
-        __GLOBAL_CONCURENT_QIANKUN__?: Record<string, QiankunWindow>
         __ASMA__QIANKUN__SHELL__?: {
             loadMicroApp?: typeof loadMicroApp
         }
