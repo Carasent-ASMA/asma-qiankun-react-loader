@@ -10,21 +10,21 @@ let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 } */
 
 export async function setLoadMicroApp(
-    importerFn: () => Promise<typeof import('asma-qiankun')>,
+    // importerFn: () => Promise<typeof import('asma-qiankun')>,
     env: envs,
     dev_mode: boolean,
 ) {
     if (!loadASMAMicroAPP) {
-        await setLoadMicroAppLoc(importerFn(), env, dev_mode)
+        await setLoadMicroAppLoc(/* importerFn(),  */ env, dev_mode)
     }
 }
 async function setLoadMicroAppLoc(
-    asma_qiankun_promise: Promise<typeof import('asma-qiankun')>,
+    // asma_qiankun_promise: Promise<typeof import('asma-qiankun')>,
     env: envs,
     dev_mode: boolean,
 ) {
     if (!loadASMAMicroAPP) {
-        const asma_qiankun = await asma_qiankun_promise
+        const asma_qiankun = await import('asma-qiankun')
         const singleSpa = await import('single-spa')
 
         loadASMAMicroAPP = asma_qiankun.loadMicroApp
