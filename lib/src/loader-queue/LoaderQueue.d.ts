@@ -32,7 +32,7 @@ export type IMicroAppProps<T> = {
     component_path: string;
 } & T;
 export declare const areLoadersInProcess: Record<string, boolean>;
-declare const initLoadMicroApp: typeof initLoadMicroAppFn;
+declare let initLoadMicroApp: typeof initLoadMicroAppFn;
 declare function initLoadMicroAppFn(app: {
     name: string;
     entry: Entry;

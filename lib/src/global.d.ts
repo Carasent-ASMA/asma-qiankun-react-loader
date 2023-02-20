@@ -1,2 +1,25 @@
+import type { loadMicroApp } from 'asma-qiankun';
+import type { initLoadMicroApp } from './loader-queue/LoaderQueue';
+export interface QiankunWindow {
+    [x: string]: any;
+}
+declare global {
+    interface Window {
+        __POWERED_BY_QIANKUN__?: boolean;
+        __INJECTED_PUBLIC_PATH_BY_QIANKUN__?: string | Record<string, string>;
+        __QIANKUN_DEVELOPMENT__?: boolean;
+        Zone?: CallableFunction;
+        __GLOBAL_CONCURENT_QIANKUN__?: Record<string, QiankunWindow>;
+        __ASMA__QIANKUN__SHELL__?: {
+            loadMicroApp?: typeof loadMicroApp;
+        };
+        __INIT_LOAD_MICROAPP__?: typeof initLoadMicroApp;
+    }
+    namespace NodeJS {
+        interface ProcessEnv {
+            NODE_ENV: 'development' | 'production' | 'test';
+        }
+    }
+}
 export {};
 //# sourceMappingURL=global.d.ts.map

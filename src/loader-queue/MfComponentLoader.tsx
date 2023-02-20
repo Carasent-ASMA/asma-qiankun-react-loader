@@ -1,8 +1,15 @@
 import { useEffect, useRef } from 'react'
 
-import type { IMfComponentLoader, IMfComponentLoaderInternal, MicroApp, ObjectType } from 'asma-qiankun'
+import type { MicroApp, ObjectType } from 'asma-qiankun'
 
-import { incrementOccurence, initLoadMicroApp, LoaderQueue, removeLoaderToResolve } from './LoaderQueue'
+import {
+    IMfComponentLoader,
+    IMfComponentLoaderInternal,
+    incrementOccurence,
+    initLoadMicroApp,
+    LoaderQueue,
+    removeLoaderToResolve,
+} from './LoaderQueue'
 
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,

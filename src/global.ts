@@ -1,5 +1,8 @@
-/* export interface QiankunWindow {
-    __POWERED_BY_QIANKUN__?: boolean
+import type { loadMicroApp } from 'asma-qiankun'
+import type { initLoadMicroApp } from './loader-queue/LoaderQueue'
+
+export interface QiankunWindow {
+    //__POWERED_BY_QIANKUN__?: boolean
     [x: string]: any
 }
 declare global {
@@ -10,6 +13,10 @@ declare global {
         __QIANKUN_DEVELOPMENT__?: boolean
         Zone?: CallableFunction
         __GLOBAL_CONCURENT_QIANKUN__?: Record<string, QiankunWindow>
+        __ASMA__QIANKUN__SHELL__?: {
+            loadMicroApp?: typeof loadMicroApp
+        }
+        __INIT_LOAD_MICROAPP__?: typeof initLoadMicroApp
     }
     namespace NodeJS {
         interface ProcessEnv {
@@ -17,5 +24,5 @@ declare global {
         }
     }
 }
- */
+
 export {}

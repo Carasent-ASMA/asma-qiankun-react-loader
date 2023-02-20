@@ -9,7 +9,7 @@ declare global {
         __ASMA_REGISTRABLE_APPS__?: IAsmaAppsObject;
     }
 }
-export declare function getAsmaRegistrableApps(): import("asma-qiankun").IASMAAppsObject | undefined;
+export declare function getAsmaRegistrableApps(): IAsmaAppsObject | undefined;
 export declare function setAsmaRegistrableAppsNew(reg_app_names: IMicroAppRegistryNames[], env?: envs, devtools?: boolean): Promise<void>;
 /**
  * before registerAsmaMicroApps one need to call setAsmaRegistrableApps to ensure microappregistration!

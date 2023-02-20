@@ -102,7 +102,7 @@ async function resolveLoaders(app_name: string) {
     }
 }
 
-const initLoadMicroApp = initLoadMicroAppFn
+let initLoadMicroApp: typeof initLoadMicroAppFn
 
 function initLoadMicroAppFn(
     app: { name: string; entry: Entry },
@@ -140,7 +140,8 @@ function initLoadMicroAppFn(
     }
 } */
 
-//initLoadMicroApp = /* window.__INIT_LOAD_MICROAPP__ || */ initLoadMicroAppFn
+initLoadMicroApp = window.__INIT_LOAD_MICROAPP__ || initLoadMicroAppFn
+
 if (!window.__INIT_LOAD_MICROAPP__) {
     window.__INIT_LOAD_MICROAPP__ = initLoadMicroApp
 }
