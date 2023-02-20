@@ -1,7 +1,7 @@
 import type { Entry, MicroApp } from 'asma-qiankun'
-import { loadASMAMicroAPP } from 'asma-qiankun/src/loadASMAMicroApp'
 import { remove } from 'lodash'
 import type { RefObject } from 'react'
+import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 
 export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string) {
     /*   const micro_app_loader = LoaderQueue[app_name]?.find((l) => l.id === loader_to_resolve_id)
@@ -111,12 +111,15 @@ function initLoadMicroAppFn(
     setLoadedApp: (lApp: MicroApp) => void,
 ) {
     function init() {
-        const loadedapp = loadASMAMicroAPP({
-            name: app.name,
-            entry: app.entry,
-            container: containerRef.current!,
-            props: { ...props, occurence: occurences[app.name] },
-        },{})
+        const loadedapp = loadASMAMicroAPP(
+            {
+                name: app.name,
+                entry: app.entry,
+                container: containerRef.current!,
+                props: { ...props, occurence: occurences[app.name] },
+            },
+            {},
+        )
 
         setLoadedApp(loadedapp)
 
