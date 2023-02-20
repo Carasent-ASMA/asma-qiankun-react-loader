@@ -1,6 +1,6 @@
 {
     "name": "asma-qiankun-react-loader",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "helper functions form asma-qiankun",
     "keywords": [],
     "repository": {
@@ -20,7 +20,7 @@
         "@types/lodash": "^4.14.191",
         "@types/node": "^18.11.9",
         "@types/react": "^18.0.28",
-        "asma-qiankun": "^1.1.17",
+        "asma-qiankun": "^1.2.0",
         "prettier": "^2.1.2",
         "typescript": "^4.8.4"
     }
