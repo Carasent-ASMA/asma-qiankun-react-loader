@@ -32,7 +32,7 @@ export function setAsmaRegistrableAppsNew(
         return acc
     }, {} as typeof __MICROAPP_REGISTRY)
 
-    setReactRefreshOnWindow()
+    setReactRefreshOnWindow(devtools)
 
     return setAsmaRegistrableApps(picked_microapps, devtools)
 }
