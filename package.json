@@ -1,6 +1,6 @@
 {
     "name": "asma-qiankun-react-loader",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "description": "helper functions form asma-qiankun",
     "keywords": [],
     "repository": {
@@ -15,13 +15,12 @@
     "scripts": {
         "build": "npx tsc && npx tsc -p ."
     },
-    "dependencies": {
-        "asma-qiankun": "^1.1.17"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/lodash": "^4.14.191",
         "@types/node": "^18.11.9",
         "@types/react": "^18.0.28",
+        "asma-qiankun": "^1.1.17",
         "prettier": "^2.1.2",
         "typescript": "^4.8.4"
     }
