@@ -1,5 +1,4 @@
 import type { IASMAAppsObject as IAsmaAppsObject } from './interfaces';
-import { envs } from './registry/environment-entries';
 import { IMicroAppRegistryNames } from './registry/microapp-registry';
 /**
  *@readonly do not update directly use setAppsObject() in stead
@@ -10,7 +9,7 @@ declare global {
     }
 }
 export declare function getAsmaRegistrableApps(): IAsmaAppsObject | undefined;
-export declare function setAsmaRegistrableAppsNew(reg_app_names: IMicroAppRegistryNames[], env?: envs, devtools?: boolean): Promise<void>;
+export declare function setAsmaRegistrableAppsNew(reg_app_names: IMicroAppRegistryNames[], devtools?: boolean): Promise<void>;
 /**
  * before registerAsmaMicroApps one need to call setAsmaRegistrableApps to ensure microappregistration!
  * call this method after render App() method.

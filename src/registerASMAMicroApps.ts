@@ -2,7 +2,7 @@ import { setReactRefreshOnWindow } from './helpers'
 import type { IASMAAppsObject as IAsmaAppsObject } from './interfaces'
 import type { RegistrableApp } from 'asma-qiankun'
 
-import { envs, registry_envs } from './registry/environment-entries'
+import { registry_envs } from './registry/environment-entries'
 import { IMicroAppRegistryNames, __MICROAPP_REGISTRY } from './registry/microapp-registry'
 /**
  *@readonly do not update directly use setAppsObject() in stead
@@ -19,11 +19,16 @@ export function getAsmaRegistrableApps() {
     }
     return asmaRegistrableApps
 }
+
+const islocal = window.location.origin.includes('local') || window.location.origin.includes('127.0.0.1')
+
 export function setAsmaRegistrableAppsNew(
     reg_app_names: IMicroAppRegistryNames[],
-    env: envs = 'cloud',
+
     devtools = false,
 ) {
+    const env = islocal ? 'local' : 'cloud'
+
     const picked_microapps = reg_app_names.reduce((acc, name) => {
         acc[name] = __MICROAPP_REGISTRY[name]
 

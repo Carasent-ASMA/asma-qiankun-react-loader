@@ -1,7 +1,6 @@
 //import { loadMicroApp } from './qiankun/src'
 
 import { setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
-import type { envs } from './registry/environment-entries'
 
 let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 
@@ -11,16 +10,14 @@ let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 
 export async function setLoadMicroApp(
     // importerFn: () => Promise<typeof import('asma-qiankun')>,
-    env: envs,
     dev_mode: boolean,
 ) {
     if (!loadASMAMicroAPP) {
-        await setLoadMicroAppLoc(/* importerFn(),  */ env, dev_mode)
+        await setLoadMicroAppLoc(/* importerFn(),  */ dev_mode)
     }
 }
 async function setLoadMicroAppLoc(
     // asma_qiankun_promise: Promise<typeof import('asma-qiankun')>,
-    env: envs,
     dev_mode: boolean,
 ) {
     if (!loadASMAMicroAPP) {
@@ -32,7 +29,7 @@ async function setLoadMicroAppLoc(
         window.__ASMA__QIANKUN__SHELL__ = window.__ASMA__QIANKUN__SHELL__ || {}
 
         window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
-
+       
         await setAsmaRegistrableAppsNew(
             [
                 'adopus-app-directory',
@@ -44,7 +41,7 @@ async function setLoadMicroAppLoc(
                 'asma-app-directory',
                 'asma-app-office',
             ],
-            env,
+
             dev_mode,
         )
         singleSpa.setBootstrapMaxTime(8000, false, 15000)
