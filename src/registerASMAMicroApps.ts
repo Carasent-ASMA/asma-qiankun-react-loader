@@ -98,7 +98,7 @@ async function setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devtoo
 }
 
 /**
- * before registerAsmaMicroApps one need to call setAsmaRegistrableApps to ensure microappregistration!
+ * before registerAsmaMicroApps one need to call setAsmaRegistrableApps to ensure microapp registration!
  * call this method after render App() method.
  */
 /* export async function registerAsmaMicroApps() {
