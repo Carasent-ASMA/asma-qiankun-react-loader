@@ -48,7 +48,7 @@ async function setLoadMicroAppLoc(
         singleSpa.setMountMaxTime(5000, false, 15000)
         singleSpa.setUnmountMaxTime(5000, true, 15000)
 
-        asma_qiankun.start({ sandbox: { strictStyleIsolation: true } })
+        asma_qiankun.start({ sandbox: { strictStyleIsolation: true, experimentalStyleIsolation: true } })
     }
 }
 export { loadASMAMicroAPP }
