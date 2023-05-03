@@ -34,13 +34,13 @@ async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader
 
 export const LoaderQueue: IAppLoaderQueue = {}
 
-export const occurences: Record<string, number> = {}
+export const occurrences: Record<string, number> = {}
 
-export function incrementOccurence(app_name: string) {
-    if (!occurences[app_name]) {
-        occurences[app_name] = 0
+export function incrementOccurrence(app_name: string) {
+    if (!occurrences[app_name]) {
+        occurrences[app_name] = 0
     }
-    occurences[app_name]++
+    occurrences[app_name]++
 }
 
 function registerLoader(app_name: string, loader: ILoader) {
@@ -116,7 +116,7 @@ function initLoadMicroAppFn(
                 name: app.name,
                 entry: app.entry,
                 container: containerRef.current!,
-                props: { ...props, occurence: occurences[app.name] },
+                props: { ...props, occurence: occurrences[app.name] },
             },
             {},
         )
@@ -126,7 +126,7 @@ function initLoadMicroAppFn(
         return loadedapp
     }
 
-    incrementOccurence(app.name)
+    incrementOccurrence(app.name)
 
     registerLoader(app.name, { id: props.component_path, init })
 

@@ -29,7 +29,7 @@ async function setLoadMicroAppLoc(
         window.__ASMA__QIANKUN__SHELL__ = window.__ASMA__QIANKUN__SHELL__ || {}
 
         window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
-       
+
         await setAsmaRegistrableAppsNew(
             [
                 'adopus-app-directory',
@@ -48,7 +48,7 @@ async function setLoadMicroAppLoc(
         singleSpa.setMountMaxTime(5000, false, 15000)
         singleSpa.setUnmountMaxTime(5000, true, 15000)
 
-        asma_qiankun.start()
+        asma_qiankun.start({ sandbox: { strictStyleIsolation: true } })
     }
 }
 export { loadASMAMicroAPP }

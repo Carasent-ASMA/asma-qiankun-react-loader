@@ -3,7 +3,7 @@ import type { IASMAAppsObject as IAsmaAppsObject } from './interfaces'
 import type { RegistrableApp } from 'asma-qiankun'
 
 import { registry_envs } from './registry/environment-entries'
-import { IMicroAppRegistryNames, __MICROAPP_REGISTRY } from './registry/microapp-registry'
+import { type IMicroAppRegistryNames, __MICROAPP_REGISTRY } from './registry/microapp-registry'
 /**
  *@readonly do not update directly use setAppsObject() in stead
  */

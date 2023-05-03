@@ -5,7 +5,7 @@ import type { MicroApp, ObjectType } from 'asma-qiankun'
 import {
     IMfComponentLoader,
     IMfComponentLoaderInternal,
-    incrementOccurence,
+    incrementOccurrence,
     initLoadMicroApp,
     LoaderQueue,
     removeLoaderToResolve,
@@ -20,7 +20,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     const containerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        incrementOccurence(app.name)
+        incrementOccurrence(app.name)
         if (!app) {
             console.error('No micro app was provied! microapp components wont render!`')
             return

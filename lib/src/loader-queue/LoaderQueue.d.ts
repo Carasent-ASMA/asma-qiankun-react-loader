@@ -2,8 +2,8 @@ import type { Entry, MicroApp } from 'asma-qiankun';
 import type { RefObject } from 'react';
 export declare function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string): void;
 export declare const LoaderQueue: IAppLoaderQueue;
-export declare const occurences: Record<string, number>;
-export declare function incrementOccurence(app_name: string): void;
+export declare const occurrences: Record<string, number>;
+export declare function incrementOccurrence(app_name: string): void;
 interface IAppLoaderQueue {
     [app_names: string]: ILoader[];
 }
