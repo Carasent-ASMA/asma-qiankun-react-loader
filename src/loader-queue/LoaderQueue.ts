@@ -117,7 +117,15 @@ function initLoadMicroAppFn(
                 name: app.name,
                 entry: app.entry,
                 container: containerRef.current!,
-                props: { ...props, occurence: occurrence, occurrence },
+
+                props: {
+                    ...props,
+                    /**
+                     * @deprecated remove in next major version
+                     */
+                    occurence: occurrence,
+                    occurrence,
+                },
             },
             {},
         )
