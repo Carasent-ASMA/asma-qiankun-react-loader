@@ -111,19 +111,20 @@ function initLoadMicroAppFn(
     setLoadedApp: (lApp: MicroApp) => void,
 ) {
     function init() {
-        const loadedapp = loadASMAMicroAPP(
+        const occurrence = occurrences[app.name]
+        const loaded_app = loadASMAMicroAPP(
             {
                 name: app.name,
                 entry: app.entry,
                 container: containerRef.current!,
-                props: { ...props, occurence: occurrences[app.name] },
+                props: { ...props, occurence: occurrence, occurrence },
             },
             {},
         )
 
-        setLoadedApp(loadedapp)
+        setLoadedApp(loaded_app)
 
-        return loadedapp
+        return loaded_app
     }
 
     incrementOccurrence(app.name)
