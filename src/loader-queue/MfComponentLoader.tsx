@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react'
 import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import {
-    IMfComponentLoader,
-    IMfComponentLoaderInternal,
+    type IMfComponentLoader,
+    type IMfComponentLoaderInternal,
     incrementOccurrence,
     initLoadMicroApp,
     LoaderQueue,
