@@ -38,10 +38,10 @@
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.3.tgz#cef09e3ec9af1d63d2a6cc5b383a737e24e6dcf5"
   integrity sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==
 
-asma-qiankun@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/asma-qiankun/-/asma-qiankun-1.6.3.tgz#5d41ed53826a8b3043818d262f845542b757fa75"
-  integrity sha512-h6MuAK4c0V1akQATR3tHR9APu6Cq5+AgKm4/XAnOTb5WAKJ0oXzG/2W1JjrdDJXDZvQlebqgKJki5RWP3WpHkQ==
+asma-qiankun@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/asma-qiankun/-/asma-qiankun-1.6.4.tgz#1a6edeffeef0389e1af92eb7637e93db7dc90662"
+  integrity sha512-pjomGe7LjZ8PrXtHtyKp966h9PnBd7Dz3Oxs2QT7VRtCxv4htncyhAC1Jjpc5ueUbLD6HRbth4cf373bo/dFJQ==
   dependencies:
     import-html-entry "^1.14.0"
     lodash "^4.17.21"
