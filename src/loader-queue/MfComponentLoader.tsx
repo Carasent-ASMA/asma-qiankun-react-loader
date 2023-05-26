@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import {
     type IMfComponentLoader,
-    type IMfComponentLoaderInternal,
     incrementOccurrence,
     initLoadMicroApp,
     LoaderQueue,
@@ -16,20 +15,24 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     props,
     className,
     placeholder = 'mf original',
-}: IMfComponentLoaderInternal<T>) {
+    LoaderComponent,
+}: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        incrementOccurrence(app.name)
         if (!app) {
             console.error('No micro app was provied! microapp components wont render!`')
             return
         }
 
-        let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
+        incrementOccurrence(app.name)
 
+        let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
+        setLoading(true)
         initLoadMicroApp(app, props, containerRef, (lApp) => {
             loadedapp = lApp
+            setLoading(false)
         })
         //console.log(`${app.name} mounting... ${props.component_path} micro_app:`, loadedapp!)
 
@@ -52,7 +55,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     // }
     return (
         <div ref={containerRef} className={className}>
-            {placeholder}
+            {(loading && ((LoaderComponent && <LoaderComponent />) || null)) || placeholder}
         </div>
     )
 }

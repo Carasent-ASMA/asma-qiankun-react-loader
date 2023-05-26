@@ -1,4 +1,4 @@
-import type { Entry, MicroApp, } from 'asma-qiankun'
+import type { Entry, MicroApp } from 'asma-qiankun'
 import { remove } from 'lodash'
 import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
@@ -65,13 +65,15 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     app?: { name: string; entry: Entry }
     props: IMicroAppProps<T>
     placeholder?: string
+    LoaderComponent?: () => JSX.Element
 }
 
-export interface IMfComponentLoaderInternal<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
+/* export interface IMfComponentLoaderInternal<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
     app: { name: string; entry: Entry }
     props: IMicroAppProps<T>
     placeholder?: string
-}
+    LoaderComponent?: () => JSX.Element
+} */
 
 export type IMicroAppProps<T> = { component_path: string } & T
 
