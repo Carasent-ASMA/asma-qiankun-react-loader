@@ -15,6 +15,8 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-consents': '/app/consents/',
         'asma-app-directory': '/app/directory/',
         'asma-app-office': '/app/office/',
+        'asma-app-devextreme': '/app/devextreme/',
+        
     },
     local: {
         'adopus-app-directory': 'http://localhost:3100',
@@ -25,5 +27,6 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-consents': 'http://localhost:3008',
         'asma-app-directory': 'http://localhost:3003',
         'asma-app-office': 'http://localhost:3005',
+        'asma-app-devextreme': 'http://localhost:3009',
     },
 }

@@ -40,6 +40,7 @@ async function setLoadMicroAppLoc(
                 'asma-app-consents',
                 'asma-app-directory',
                 'asma-app-office',
+                'asma-app-devextreme',
             ],
 
             dev_mode,
