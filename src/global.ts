@@ -1,4 +1,4 @@
-import type { loadMicroApp } from 'asma-qiankun/src'
+import type { loadMicroApp } from 'asma-qiankun'
 import type { initLoadMicroApp } from './loader-queue/LoaderQueue'
 
 export interface QiankunWindow {

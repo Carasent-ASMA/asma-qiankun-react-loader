@@ -11,17 +11,19 @@
     "author": "IE",
     "type": "module",
     "main": "lib/index.js",
-    "types": "lib",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build": "npx tsc && npx tsc -p ."
     },
-    "dependencies": {},
     "devDependencies": {
         "@types/lodash": "^4.14.191",
         "@types/node": "^18.11.9",
-        "@types/react": "^18.0.28",
-        "asma-qiankun": "^1.6.4",
-        "prettier": "^2.1.2",
-        "typescript": "^5.0.4"
+        "@types/react": "^18.2.12",
+        "prettier": "^2.8.8",
+        "typescript": "^5.1.3"
+    },
+    "dependencies": {
+        "asma-qiankun": "^1.6.10",
+        "single-spa": "^5.9.5"
     }
 }
