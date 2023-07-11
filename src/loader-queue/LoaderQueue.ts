@@ -1,5 +1,5 @@
 import type { Entry, MicroApp } from 'asma-qiankun'
-import { remove } from 'lodash'
+import  remove  from 'lodash-es/remove'
 import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 

@@ -16,14 +16,14 @@
         "build": "npx tsc && npx tsc -p ."
     },
     "devDependencies": {
-        "@types/lodash": "^4.14.191",
-        "@types/node": "^18.11.9",
-        "@types/react": "^18.2.12",
-        "prettier": "^2.8.8",
-        "typescript": "^5.1.3"
+        "@types/lodash-es": "^4.17.7",
+        "@types/node": "^18.16.19",
+        "@types/react": "^18.2.14",
+        "prettier": "^3.0.0",
+        "typescript": "^5.1.6"
     },
     "dependencies": {
-        "asma-qiankun": "^1.6.10",
+        "asma-qiankun": "^1.7.0",
         "qiankun-overrides": "^1.0.1",
         "single-spa": "^5.9.5"
     }
