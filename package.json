@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "asma-qiankun": "^1.6.10",
+        "qiankun-overrides": "^1.0.1",
         "single-spa": "^5.9.5"
     }
 }

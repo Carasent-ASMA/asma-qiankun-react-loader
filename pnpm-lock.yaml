@@ -8,6 +8,9 @@ dependencies:
   asma-qiankun:
     specifier: ^1.6.10
     version: 1.6.10
+  qiankun-overrides:
+    specifier: ^1.0.1
+    version: 1.0.1
   single-spa:
     specifier: ^5.9.5
     version: 5.9.5
