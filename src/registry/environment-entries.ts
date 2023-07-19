@@ -16,6 +16,7 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-directory': '/app/directory/',
         'asma-app-office': '/app/office/',
         'asma-app-devextreme': '/app/devextreme/',
+        'asma-app-activities': '/app/activities/',
         
     },
     local: {
@@ -28,5 +29,6 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-directory': 'http://localhost:3003',
         'asma-app-office': 'http://localhost:3005',
         'asma-app-devextreme': 'http://localhost:3009',
+        'asma-app-activities': 'http://localhost:3010',
     },
 }
