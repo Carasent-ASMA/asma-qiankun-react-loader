@@ -39,18 +39,17 @@ export function setAsmaRegistrableAppsNew(
 
     setReactRefreshOnWindow(devtools)
 
-    return setAsmaRegistrableApps(picked_microapps, devtools)
+    return _setAsmaRegistrableApps(picked_microapps, devtools)
 }
 
 /**
  * In dev mode it  set ImportMapOverrides app
  *
- * call this function before render App() method
- * @deprecated use setAsmaRegistrableAppsNew()
+ * call this function before render App() method.
  * @param registrable_apps IAsmaAppsObject
  * @param devtools bool
  */
-async function setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devtools?: boolean) {
+async function _setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devtools?: boolean) {
     if (!registrable_apps) {
         devtools && console.warn('No registrable apps detected!')
 
