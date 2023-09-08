@@ -19,6 +19,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
+    const [Mfapp, setApp] = useState<MicroApp | undefined>(undefined)
 
     useEffect(() => {
         if (!app) {
@@ -28,10 +29,10 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 
         incrementOccurrence(app.name)
 
-        let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
+        //let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
         setLoading(true)
         initLoadMicroApp(app, props, containerRef, (lApp) => {
-            loadedapp = lApp
+            setApp(lApp)
             setLoading(false)
         })
         //console.log(`${app.name} mounting... ${props.component_path} micro_app:`, loadedapp!)
@@ -39,16 +40,21 @@ function MfComponentLoaderInternal<T extends ObjectType>({
         return () => {
             const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
 
-            loadedapp =
-                loadedapp ||
-                loader?.micro_app ||
-                LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init()
+            const loadedapp =
+                Mfapp || loader?.micro_app || LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init()
 
             loadedapp?.unmount()
 
             removeLoaderToResolve(app.name, props.component_path)
         }
     }, [])
+    useEffect(() => {
+        if(!Mfapp?.update) {
+            console.warn('Mfapp or MfApp.update is not defined')
+            return
+        }
+        Mfapp.update(props)
+    }, [props])
 
     // if (pending) {
     // return <div>pending... {placeholder}</div>
