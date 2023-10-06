@@ -1,4 +1,4 @@
-export * from './global'
+export * from './g-inerfaces'
 export * from './interfaces'
 export * from './registerASMAMicroApps'
 export * from './registry/microapp-registry'
