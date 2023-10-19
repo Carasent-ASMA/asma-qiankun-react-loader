@@ -34,7 +34,6 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             loadedapp = lApp
             setLoading(false)
         })
-        //console.log(`${app.name} mounting... ${props.component_path} micro_app:`, loadedapp!)
 
         return () => {
             const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)

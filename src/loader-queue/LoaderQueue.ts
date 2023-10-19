@@ -1,5 +1,5 @@
 import type { Entry, MicroApp } from 'asma-qiankun'
-import  remove  from 'lodash-es/remove'
+import remove from 'lodash-es/remove'
 import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 
@@ -20,9 +20,6 @@ export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: st
 async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader) {
     micro_app_loader.micro_app = micro_app_loader.init()
 
-    if (app_name === 'asma-app-calendar') {
-        console.log(`${micro_app_loader.id} `, micro_app_loader)
-    }
     await micro_app_loader.micro_app?.bootstrapPromise
         .catch(() => {
             removeLoaderToResolve(app_name, micro_app_loader.id)
