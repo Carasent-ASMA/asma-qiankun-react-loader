@@ -1,4 +1,5 @@
 //import { loadMicroApp } from './qiankun/src'
+import { registry_envs } from './registry/environment-entries'
 
 import { setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
 
@@ -11,14 +12,16 @@ let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 export async function setLoadMicroApp(
     // importerFn: () => Promise<typeof import('asma-qiankun')>,
     dev_mode: boolean,
+    registry_urls?: (typeof registry_envs)['local'],
 ) {
     if (!loadASMAMicroAPP) {
-        await setLoadMicroAppLoc(/* importerFn(),  */ dev_mode)
+        await setLoadMicroAppLoc(/* importerFn(),  */ dev_mode, registry_urls)
     }
 }
 async function setLoadMicroAppLoc(
     // asma_qiankun_promise: Promise<typeof import('asma-qiankun')>,
     dev_mode: boolean,
+    registry_urls?: (typeof registry_envs)['local'],
 ) {
     if (!loadASMAMicroAPP) {
         const asma_qiankun = await import('asma-qiankun')
@@ -30,8 +33,8 @@ async function setLoadMicroAppLoc(
 
         window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
 
-        await setAsmaRegistrableAppsNew(
-            [
+        await setAsmaRegistrableAppsNew({
+            reg_app_names: [
                 'adopus-app-directory',
                 'asma-app-notification',
                 'asma-app-artifact',
@@ -43,9 +46,9 @@ async function setLoadMicroAppLoc(
                 'asma-app-devextreme',
                 'asma-app-activities',
             ],
-
-            dev_mode,
-        )
+            devtools: dev_mode,
+            registry_urls,
+        })
         singleSpa.setBootstrapMaxTime(8000, false, 15000)
         singleSpa.setMountMaxTime(5000, false, 15000)
         singleSpa.setUnmountMaxTime(5000, true, 15000)

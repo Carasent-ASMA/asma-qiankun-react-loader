@@ -4,11 +4,11 @@ import type { RegistrableApp } from 'asma-qiankun'
 
 import { registry_envs } from './registry/environment-entries'
 import { type IMicroAppRegistryNames, __MICROAPP_REGISTRY } from './registry/microapp-registry'
-/**
- *@readonly do not update directly use setAppsObject() in stead
- */
 declare global {
     interface Window {
+        /**
+         *@readonly do not update directly use setAppsObject() in stead
+         */
         __ASMA_REGISTRABLE_APPS__?: IAsmaAppsObject
     }
 }
@@ -22,20 +22,32 @@ export function getAsmaRegistrableApps() {
 
 const islocal = window.location.origin.includes('local') || window.location.origin.includes('127.0.0.1')
 
-export function setAsmaRegistrableAppsNew(
-    reg_app_names: IMicroAppRegistryNames[],
-
+export function setAsmaRegistrableAppsNew({
     devtools = false,
-) {
+    reg_app_names,
+    registry_urls: _registry_urls,
+}: {
+    reg_app_names: IMicroAppRegistryNames[]
+    registry_urls?: (typeof registry_envs)['local']
+
+    devtools: boolean
+}) {
     const env = islocal ? 'local' : 'cloud'
 
-    const picked_microapps = reg_app_names.reduce((acc, name) => {
-        acc[name] = __MICROAPP_REGISTRY[name]
+    const micro_app_registry = __MICROAPP_REGISTRY
 
-        acc[name].entry = registry_envs[env][name]
+    const registry_urls = _registry_urls || registry_envs[env]
 
-        return acc
-    }, {} as typeof __MICROAPP_REGISTRY)
+    const picked_microapps = reg_app_names.reduce(
+        (acc, name) => {
+            acc[name] = micro_app_registry[name]
+
+            acc[name].entry = registry_urls[name]
+
+            return acc
+        },
+        {} as typeof __MICROAPP_REGISTRY,
+    )
 
     setReactRefreshOnWindow(devtools)
 
@@ -95,31 +107,6 @@ async function _setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devto
 
     window.__ASMA_REGISTRABLE_APPS__ = asmaRegistrableApps
 }
-
-/**
- * before registerAsmaMicroApps one need to call setAsmaRegistrableApps to ensure microapp registration!
- * call this method after render App() method.
- */
-/* export async function registerAsmaMicroApps() {
-    if (asmaRegistrableApps && !isEmpty(asmaRegistrableApps)) {
-        registerMicroApps(
-            Object.values<RegistrableApp<{}>>(asmaRegistrableApps).filter((app) => app.activeRule !== 'component-only'),
-            {
-                beforeLoad: async (app) => {
-                    console.log('[LifeCycle] before load', 'color: green;', app.name)
-                },
-
-                beforeMount: async (app) => {
-                    console.log('[LifeCycle] before mount', 'color: green;', app.name)
-                },
-
-                afterUnmount: async (app) => {
-                    console.log('[LifeCycle] after unmount', 'color: green;', app.name)
-                },
-            },
-        )
-    }
-} */
 
 export function isEmpty(obj: unknown) {
     if (typeof obj === 'object') {
