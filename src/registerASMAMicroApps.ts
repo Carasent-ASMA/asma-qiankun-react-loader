@@ -38,7 +38,9 @@ export function setAsmaRegistrableAppsNew({
 
     const registry_urls = _registry_urls || registry_envs[env]
 
-    const picked_microapps = reg_app_names.reduce(
+    const registry_envs_names = _registry_urls && (Object.keys(_registry_urls) as IMicroAppRegistryNames[])
+
+    const picked_microapps = (registry_envs_names || reg_app_names).reduce(
         (acc, name) => {
             acc[name] = micro_app_registry[name]
 
