@@ -42,7 +42,14 @@ export function setAsmaRegistrableAppsNew({
 
     const picked_microapps = (registry_envs_names || reg_app_names).reduce(
         (acc, name) => {
-            acc[name] = micro_app_registry[name]
+            acc[name] = micro_app_registry[name] ||
+                console.warn(`No registry entry for ${name}, creating new one!`) || {
+                    name,
+                    entry: '',
+                    container: '#micro-app',
+                    loader: () => {},
+                    activeRule: 'component-only',
+                }
 
             acc[name].entry = registry_urls[name]
 
