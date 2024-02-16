@@ -73,6 +73,13 @@ const __MICROAPP_REGISTRY = {
         loader: () => {},
         activeRule: 'component-only',
     },
+    'asma-app-crm': {
+        name: '',
+        entry: '',
+        container: '#micro-app',
+        loader: () => {},
+        activeRule: 'component-only',
+    },
 }
 
 export type IMicroAppRegistryNames = keyof typeof __MICROAPP_REGISTRY
