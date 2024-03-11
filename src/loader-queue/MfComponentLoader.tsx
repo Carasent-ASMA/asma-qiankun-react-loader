@@ -16,6 +16,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     className,
     placeholder = 'mf original',
     LoaderComponent,
+    abortSignal,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
@@ -26,8 +27,10 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             return
         }
 
-        const abortController = new AbortController()
-
+        const abortController = abortSignal ? new AbortController() : undefined
+        if (props.component_path === '/my-recipients-widget') {
+            console.log('MfComponentLoaderInternal mounted: ', app.name)
+        }
         incrementOccurrence(app.name)
 
         let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
@@ -40,13 +43,16 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 loadedapp = lApp
                 setLoading(false)
             },
-            abortSignal: abortController.signal,
+            abortSignal: abortSignal || abortController?.signal,
         })
 
         return () => {
             const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
+            if (props.component_path === '/my-recipients-widget') {
+                console.log('MfComponentLoaderInternal mounted: ', app.name)
+            }
 
-            abortController.abort()
+            abortController?.abort()
 
             loadedapp =
                 loadedapp ||
@@ -69,6 +75,16 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     )
 }
 export function MfComponentLoader<T extends ObjectType>(props: IMfComponentLoader<T>) {
+    useEffect(() => {
+        if (props.props.component_path === '/my-recipients-widget') {
+            console.log('MfComponentLoader mounted: ', props.app?.name)
+        }
+        return () => {
+            if (props.props.component_path === '/my-recipients-widget') {
+                console.log('MfComponentLoader unmounted: ', props.app?.name)
+            }
+        }
+    }, [])
     if (!props.app) {
         console.error(
             `No micro app with path '${props.props.component_path}' was provied! microapp components wont render!`,

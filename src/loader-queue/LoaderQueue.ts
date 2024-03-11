@@ -63,6 +63,7 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     props: IMicroAppProps<T>
     placeholder?: string
     LoaderComponent?: () => JSX.Element
+    abortSignal?: AbortSignal
 }
 
 /* export interface IMfComponentLoaderInternal<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
@@ -114,7 +115,7 @@ function initLoadMicroAppFn({
     props: IMicroAppProps<{}>
     containerRef: RefObject<HTMLDivElement>
     setLoadedApp: (lApp: MicroApp) => void
-    abortSignal: AbortSignal
+    abortSignal?: AbortSignal
 }) {
     function init() {
         const occurrence = occurrences[app.name]
