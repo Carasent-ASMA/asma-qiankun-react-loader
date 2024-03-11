@@ -103,12 +103,19 @@ async function resolveLoaders(app_name: string) {
 
 let initLoadMicroApp: typeof initLoadMicroAppFn
 
-function initLoadMicroAppFn(
-    app: { name: string; entry: Entry },
-    props: IMicroAppProps<{}>,
-    containerRef: RefObject<HTMLDivElement>,
-    setLoadedApp: (lApp: MicroApp) => void,
-) {
+function initLoadMicroAppFn({
+    app,
+    props,
+    containerRef,
+    setLoadedApp,
+    abortSignal,
+}: {
+    app: { name: string; entry: Entry }
+    props: IMicroAppProps<{}>
+    containerRef: RefObject<HTMLDivElement>
+    setLoadedApp: (lApp: MicroApp) => void
+    abortSignal: AbortSignal
+}) {
     function init() {
         const occurrence = occurrences[app.name]
         const loaded_app = loadASMAMicroAPP(
@@ -126,7 +133,10 @@ function initLoadMicroAppFn(
                     occurrence,
                 },
             },
-            {},
+            {
+                fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+                    window.fetch(input, { ...init, signal: abortSignal }),
+            },
         )
 
         setLoadedApp(loaded_app)

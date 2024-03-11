@@ -26,17 +26,27 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             return
         }
 
+        const abortController = new AbortController()
+
         incrementOccurrence(app.name)
 
         let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
         setLoading(true)
-        initLoadMicroApp(app, props, containerRef, (lApp) => {
-            loadedapp = lApp
-            setLoading(false)
+        initLoadMicroApp({
+            app,
+            props,
+            containerRef,
+            setLoadedApp: (lApp) => {
+                loadedapp = lApp
+                setLoading(false)
+            },
+            abortSignal: abortController.signal,
         })
 
         return () => {
             const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
+
+            abortController.abort()
 
             loadedapp =
                 loadedapp ||
