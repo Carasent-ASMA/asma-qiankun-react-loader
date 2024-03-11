@@ -6,7 +6,7 @@ import {
     type IMfComponentLoader,
     incrementOccurrence,
     initLoadMicroApp,
-    LoaderQueue,
+    //LoaderQueue,
     removeLoaderToResolve,
 } from './LoaderQueue'
 
@@ -16,25 +16,33 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     className,
     placeholder = 'mf original',
     LoaderComponent,
-    abortSignal,
+    controller: _controller,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
+    const [controller] = useState<AbortController>(_controller || new AbortController())
 
     useEffect(() => {
         if (!app) {
-            console.error('No micro app was provied! microapp components wont render!`')
+            console.error('No micro app was provided! microapp components wont render!`')
             return
         }
 
-        const abortController = abortSignal ? new AbortController() : undefined
-        if (props.component_path === '/my-recipients-widget') {
-            console.log('MfComponentLoaderInternal mounted: ', app.name)
+        if (controller.signal.aborted) {
+            console.warn(
+                `MfComponentLoaderInternal: controller signal is aborted, reason: ${controller.signal.reason}`,
+                controller,
+            )
+
+            return
         }
+
         incrementOccurrence(app.name)
 
         let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
+
         setLoading(true)
+
         initLoadMicroApp({
             app,
             props,
@@ -43,24 +51,25 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 loadedapp = lApp
                 setLoading(false)
             },
-            abortSignal: abortSignal || abortController?.signal,
+            controller: controller!,
         })
 
         return () => {
-            const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
-            if (props.component_path === '/my-recipients-widget') {
-                console.log('MfComponentLoaderInternal mounted: ', app.name)
+            //const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
+
+            if (!controller.signal.aborted) {
+                controller.abort(
+                    `unmounting MfComponentLoaderInternal for service: ${app.name} path: ${props.component_path}!`,
+                )
             }
 
-            abortController?.abort()
-
-            loadedapp =
+            /*    loadedapp =
                 loadedapp ||
                 loader?.micro_app ||
-                LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init()
+                LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init() */
 
             loadedapp?.unmount()
-
+            console.log('unmounting app: ', app.name, props.component_path, 'loadedapp: ', loadedapp)
             removeLoaderToResolve(app.name, props.component_path)
         }
     }, [])
@@ -75,16 +84,6 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     )
 }
 export function MfComponentLoader<T extends ObjectType>(props: IMfComponentLoader<T>) {
-    useEffect(() => {
-        if (props.props.component_path === '/my-recipients-widget') {
-            console.log('MfComponentLoader mounted: ', props.app?.name)
-        }
-        return () => {
-            if (props.props.component_path === '/my-recipients-widget') {
-                console.log('MfComponentLoader unmounted: ', props.app?.name)
-            }
-        }
-    }, [])
     if (!props.app) {
         console.error(
             `No micro app with path '${props.props.component_path}' was provied! microapp components wont render!`,

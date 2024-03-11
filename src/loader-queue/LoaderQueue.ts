@@ -4,12 +4,6 @@ import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 
 export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string) {
-    /*   const micro_app_loader = LoaderQueue[app_name]?.find((l) => l.id === loader_to_resolve_id)
-
-    if (micro_app_loader && !micro_app_loader?.micro_app) {
-        micro_app_loader.init().unmount()
-    } */
-
     remove(LoaderQueue[app_name] || [], (l) => l.id === loader_to_resolve_id)
 
     if (!LoaderQueue[app_name]?.length) {
@@ -54,7 +48,7 @@ interface IAppLoaderQueue {
 
 interface ILoader {
     id: string
-    init: () => MicroApp
+    init: () => MicroApp | undefined
     micro_app?: MicroApp
 }
 
@@ -63,15 +57,8 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     props: IMicroAppProps<T>
     placeholder?: string
     LoaderComponent?: () => JSX.Element
-    abortSignal?: AbortSignal
+    controller?: AbortController
 }
-
-/* export interface IMfComponentLoaderInternal<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
-    app: { name: string; entry: Entry }
-    props: IMicroAppProps<T>
-    placeholder?: string
-    LoaderComponent?: () => JSX.Element
-} */
 
 export type IMicroAppProps<T> = { component_path: string } & T
 
@@ -85,20 +72,7 @@ async function resolveLoaders(app_name: string) {
 
         if (loader_to_resolve) {
             await resolveMicroAppLoader(app_name, loader_to_resolve)
-            /*  loader_to_resolve.micro_app = loader_to_resolve.init() || undefined
-
-            await loader_to_resolve.micro_app?.bootstrapPromise
-                .catch(() => {
-                    removeLoaderToResolve(app_name, loader_to_resolve.id)
-                })
-                .finally(() => {
-                    removeLoaderToResolve(app_name, loader_to_resolve.id)
-                }) */
         }
-
-        /*  if (!LoaderQueue[app_name]?.length) {
-            areLoadersInProcess[app_name] = false
-        } */
     }
 }
 
@@ -109,15 +83,24 @@ function initLoadMicroAppFn({
     props,
     containerRef,
     setLoadedApp,
-    abortSignal,
+    controller,
 }: {
     app: { name: string; entry: Entry }
     props: IMicroAppProps<{}>
     containerRef: RefObject<HTMLDivElement>
     setLoadedApp: (lApp: MicroApp) => void
-    abortSignal?: AbortSignal
+    controller: AbortController
 }) {
     function init() {
+        if (controller.signal.aborted) {
+            console.warn('init signal aborted: ', controller.signal.aborted, 'reason: ', controller.signal.reason)
+
+            console.log('LoaderQueue before remove: ', LoaderQueue[app.name])
+
+            removeLoaderToResolve(app.name, props.component_path)
+            console.log('LoaderQueue after remove: ', LoaderQueue[app.name])
+            return
+        }
         const occurrence = occurrences[app.name]
         const loaded_app = loadASMAMicroAPP(
             {
@@ -136,7 +119,7 @@ function initLoadMicroAppFn({
             },
             {
                 fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-                    window.fetch(input, { ...init, signal: abortSignal }),
+                    window.fetch(input, { ...init, signal: controller.signal }),
             },
         )
 
@@ -153,11 +136,6 @@ function initLoadMicroAppFn({
         resolveLoaders(app.name)
     }
 }
-/* declare global {
-    interface Window {
-        __INIT_LOAD_MICROAPP__?: typeof initLoadMicroAppFn
-    }
-} */
 
 initLoadMicroApp = window.__INIT_LOAD_MICROAPP__ || initLoadMicroAppFn
 
