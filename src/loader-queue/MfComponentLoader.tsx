@@ -20,21 +20,19 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
-    const [controller] = useState<AbortController>(_controller || new AbortController())
 
     useEffect(() => {
         if (!app) {
             console.error('No micro app was provided! microapp components wont render!`')
             return
         }
+        let currentController = _controller || new AbortController()
 
-        if (controller.signal.aborted) {
+        if (currentController.signal.aborted) {
             console.warn(
-                `MfComponentLoaderInternal: controller signal is aborted, reason: ${controller.signal.reason}`,
-                controller,
+                `MfComponentLoaderInternal: controller signal is aborted, reason: ${currentController.signal.reason} resetting controller!`,
             )
-
-            return
+            currentController = new AbortController()
         }
 
         incrementOccurrence(app.name)
@@ -43,6 +41,13 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 
         setLoading(true)
 
+        currentController.signal.onabort = () => {
+            removeLoaderToResolve(app.name, props.component_path)
+
+            console.log(
+                `MfComponentLoaderInternal: onabort called! service: ${app.name} path: ${props.component_path}!`,
+            )
+        }
         initLoadMicroApp({
             app,
             props,
@@ -51,14 +56,14 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 loadedapp = lApp
                 setLoading(false)
             },
-            controller: controller!,
+            controller: currentController,
         })
 
         return () => {
             //const loader = LoaderQueue[app.name]?.find((l) => l.id === props.component_path)
 
-            if (!controller.signal.aborted) {
-                controller.abort(
+            if (!currentController.signal.aborted) {
+                currentController.abort(
                     `unmounting MfComponentLoaderInternal for service: ${app.name} path: ${props.component_path}!`,
                 )
             }
@@ -69,7 +74,6 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init() */
 
             loadedapp?.unmount()
-            console.log('unmounting app: ', app.name, props.component_path, 'loadedapp: ', loadedapp)
             removeLoaderToResolve(app.name, props.component_path)
         }
     }, [])

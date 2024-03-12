@@ -48,6 +48,7 @@ interface IAppLoaderQueue {
 
 interface ILoader {
     id: string
+    controller: AbortController
     init: () => MicroApp | undefined
     micro_app?: MicroApp
 }
@@ -69,7 +70,6 @@ async function resolveLoaders(app_name: string) {
 
     while (areLoadersInProcess[app_name]) {
         const loader_to_resolve = LoaderQueue[app_name]?.[0]
-
         if (loader_to_resolve) {
             await resolveMicroAppLoader(app_name, loader_to_resolve)
         }
@@ -130,7 +130,7 @@ function initLoadMicroAppFn({
 
     incrementOccurrence(app.name)
 
-    registerLoader(app.name, { id: props.component_path, init })
+    registerLoader(app.name, { id: props.component_path, init, controller })
 
     if (!areLoadersInProcess[app.name]) {
         resolveLoaders(app.name)
