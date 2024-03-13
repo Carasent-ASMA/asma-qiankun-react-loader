@@ -41,13 +41,6 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 
         setLoading(true)
 
-        currentController.signal.onabort = () => {
-            removeLoaderToResolve(app.name, props.component_path)
-
-            console.log(
-                `MfComponentLoaderInternal: onabort called! service: ${app.name} path: ${props.component_path}!`,
-            )
-        }
         initLoadMicroApp({
             app,
             props,

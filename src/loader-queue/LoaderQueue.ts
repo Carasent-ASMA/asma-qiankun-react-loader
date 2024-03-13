@@ -4,7 +4,15 @@ import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 
 export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string) {
+    if (app_name === 'asma-app-directory') {
+        console.log('LoaderQueue before remove:', JSON.parse(JSON.stringify(LoaderQueue[app_name] || {})))
+    }
+
     remove(LoaderQueue[app_name] || [], (l) => l.id === loader_to_resolve_id)
+
+    if (app_name === 'asma-app-directory') {
+        console.log('LoaderQueue after remove:', JSON.parse(JSON.stringify(LoaderQueue[app_name] || {})))
+    }
 
     if (!LoaderQueue[app_name]?.length) {
         areLoadersInProcess[app_name] = false
@@ -13,6 +21,15 @@ export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: st
 
 async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader) {
     micro_app_loader.micro_app = micro_app_loader.init()
+
+    micro_app_loader.controller.signal.onabort = async () => {
+        await micro_app_loader.micro_app?.unmount()
+
+        removeLoaderToResolve(app_name, micro_app_loader.id)
+        if (app_name === 'asma-app-directory') {
+            console.log(`MfComponentLoaderInternal: onabort called! service: ${app_name} path: ${micro_app_loader.id}!`)
+        }
+    }
 
     await micro_app_loader.micro_app?.bootstrapPromise
         .catch(() => {
@@ -118,8 +135,8 @@ function initLoadMicroAppFn({
                 },
             },
             {
-                fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-                    window.fetch(input, { ...init, signal: controller.signal }),
+                /*  fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+                    window.fetch(input, { ...init, signal: controller.signal }), */
             },
         )
 
