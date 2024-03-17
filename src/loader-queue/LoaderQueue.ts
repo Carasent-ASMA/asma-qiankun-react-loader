@@ -135,8 +135,7 @@ function initLoadMicroAppFn({
                 },
             },
             {
-                fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-                    window.fetch(input, { ...init, mode: 'no-cors' }),
+                fetch: (input: RequestInfo | URL, init?: RequestInit) => window.fetch(input, { ...init }),
             },
         )
 
