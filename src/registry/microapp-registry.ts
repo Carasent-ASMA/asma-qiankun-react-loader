@@ -80,6 +80,20 @@ const __MICROAPP_REGISTRY = {
         loader: () => {},
         activeRule: 'component-only',
     },
+    'asma-app-layouts': {
+        name: '',
+        entry: '',
+        container: '#micro-app',
+        loader: () => {},
+        activeRule: 'component-only',
+    },
+    'asma-app-admin': {
+        name: '',
+        entry: '',
+        container: '#micro-app',
+        loader: () => {},
+        activeRule: 'component-only',
+    },
 }
 
 export type IMicroAppRegistryNames = keyof typeof __MICROAPP_REGISTRY

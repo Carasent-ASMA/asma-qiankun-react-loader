@@ -45,6 +45,7 @@ async function setLoadMicroAppLoc(
                 'asma-app-office',
                 'asma-app-devextreme',
                 'asma-app-activities',
+                'asma-app-layouts'
             ],
             devtools: dev_mode,
             registry_urls,
