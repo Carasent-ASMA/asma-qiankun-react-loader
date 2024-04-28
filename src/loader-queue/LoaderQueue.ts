@@ -2,6 +2,7 @@ import type { Entry, MicroApp } from 'asma-qiankun'
 import remove from 'lodash-es/remove'
 import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
+import { realWindow } from '../registerASMAMicroApps'
 
 export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: string) {
     remove(LoaderQueue[app_name] || [], (l) => l.id === loader_to_resolve_id)
@@ -124,7 +125,7 @@ function initLoadMicroAppFn({
                 },
             },
             {
-                fetch: (input: RequestInfo | URL, init?: RequestInit) => window.fetch(input, { ...init }),
+                fetch: (input: RequestInfo | URL, init?: RequestInit) => realWindow.fetch(input, { ...init }),
             },
         )
 
@@ -142,10 +143,10 @@ function initLoadMicroAppFn({
     }
 }
 
-initLoadMicroApp = window.__INIT_LOAD_MICROAPP__ || initLoadMicroAppFn
+initLoadMicroApp = realWindow.__INIT_LOAD_MICROAPP__ || initLoadMicroAppFn
 
-if (!window.__INIT_LOAD_MICROAPP__) {
-    window.__INIT_LOAD_MICROAPP__ = initLoadMicroApp
+if (!realWindow.__INIT_LOAD_MICROAPP__) {
+    realWindow.__INIT_LOAD_MICROAPP__ = initLoadMicroApp
 }
 
 export { initLoadMicroApp }

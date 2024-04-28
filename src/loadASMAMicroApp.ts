@@ -1,9 +1,9 @@
 //import { loadMicroApp } from './qiankun/src'
 import { registry_envs } from './registry/environment-entries'
 
-import { setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
+import { realWindow, setAsmaRegistrableAppsNew } from './registerASMAMicroApps'
 
-let loadASMAMicroAPP = window.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
+let loadASMAMicroAPP = realWindow.__ASMA__QIANKUN__SHELL__?.loadMicroApp!
 
 /* if (!loadASMAMicroAPP) {
     setLoadMicroApp()
@@ -29,9 +29,9 @@ async function setLoadMicroAppLoc(
 
         loadASMAMicroAPP = asma_qiankun.loadMicroApp
 
-        window.__ASMA__QIANKUN__SHELL__ = window.__ASMA__QIANKUN__SHELL__ || {}
+        realWindow.__ASMA__QIANKUN__SHELL__ = realWindow.__ASMA__QIANKUN__SHELL__ || {}
 
-        window.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
+        realWindow.__ASMA__QIANKUN__SHELL__.loadMicroApp = loadASMAMicroAPP
 
         await setAsmaRegistrableAppsNew({
             reg_app_names: [
