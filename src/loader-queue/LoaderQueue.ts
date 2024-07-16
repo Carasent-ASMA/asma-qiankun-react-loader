@@ -102,10 +102,7 @@ function initLoadMicroAppFn({
         if (controller.signal.aborted) {
             console.warn('init signal aborted: ', controller.signal.aborted, 'reason: ', controller.signal.reason)
 
-            console.log('LoaderQueue before remove: ', LoaderQueue[app.name])
-
             removeLoaderToResolve(app.name, props.component_path)
-            console.log('LoaderQueue after remove: ', LoaderQueue[app.name])
             return
         }
         const occurrence = occurrences[app.name]
