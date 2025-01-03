@@ -39,6 +39,8 @@ export function incrementOccurrence(app_name: string) {
         occurrences[app_name] = 0
     }
     occurrences[app_name]++
+
+    return occurrences[app_name]!
 }
 
 function registerLoader(app_name: string, loader: ILoader) {
@@ -92,13 +94,17 @@ function initLoadMicroAppFn({
     containerRef,
     setLoadedApp,
     controller,
+    occurrence,
 }: {
     app: { name: string; entry: Entry }
+    occurrence: number
     props: IMicroAppProps<{}>
     containerRef: RefObject<HTMLDivElement>
     setLoadedApp: (lApp: MicroApp, occurrence?: number) => void
     controller: AbortController
 }) {
+    //incrementOccurrence(app.name)
+
     function init() {
         if (controller.signal.aborted) {
             console.warn('init signal aborted: ', controller.signal.aborted, 'reason: ', controller.signal.reason)
@@ -106,7 +112,8 @@ function initLoadMicroAppFn({
             removeLoaderToResolve(app.name, props.component_path)
             return
         }
-        const occurrence = occurrences[app.name]
+        //const occurrence = occurrences[app.name]
+
         const loaded_app = loadASMAMicroAPP(
             {
                 name: app.name,
@@ -127,12 +134,10 @@ function initLoadMicroAppFn({
             },
         )
 
+        console.log('Inside initLoadMicroApp:', occurrence)
         setLoadedApp(loaded_app, occurrence)
-
         return loaded_app
     }
-
-    incrementOccurrence(app.name)
 
     registerLoader(app.name, { id: props.component_path, init, controller })
 

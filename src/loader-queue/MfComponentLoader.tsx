@@ -55,7 +55,9 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             currentController = new AbortController()
         }
 
-        incrementOccurrence(app.name)
+        const occurrence = incrementOccurrence(app.name)
+
+        occurrenceRef.current = occurrence
 
         let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
 
@@ -63,13 +65,14 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 
         initLoadMicroApp({
             app,
+            occurrence,
             props,
             containerRef,
             setLoadedApp: (lApp, occurrence) => {
+                console.log('setLoadedApp called! Inside MfComponentLoader', { occurrence })
                 loadedapp = lApp
                 setLoading(false)
                 loadedAppRef.current = lApp
-                occurrenceRef.current = occurrence
             },
             controller: currentController,
         })
