@@ -62,7 +62,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             app,
             props,
             containerRef,
-            setLoadedApp: ({ lApp, occurrence }) => {
+            setLoadedApp: (lApp, occurrence) => {
                 loadedapp = lApp
                 setLoadedApp(lApp)
                 setLoading(false)
