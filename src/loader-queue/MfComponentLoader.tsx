@@ -27,7 +27,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     function update(props: T) {
         const occurrence = occurrenceRef.current
         const loadedApp = loadedAppRef.current
-        console.log('update props called! Inside MfComponentLoader', { props, occurrence, loadedApp })
+        console.log('update props called! Inside MfComponentLoader', { ...props, occurrence, loadedApp })
         if (loadedApp?.update) {
             loadedApp.update({ ...props, occurrence, occurence: occurrence })
         } else {
@@ -55,7 +55,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             currentController = new AbortController()
         }
 
-        const occurrence = incrementOccurrence(app.name)
+        const occurrence = incrementOccurrence(`${app.name}-${props.component_path}`)
 
         occurrenceRef.current = occurrence
 

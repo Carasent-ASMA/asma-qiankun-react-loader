@@ -38,6 +38,7 @@ export function incrementOccurrence(app_name: string) {
     if (!occurrences[app_name]) {
         occurrences[app_name] = 0
     }
+    console.log(`incrementOccurrence - ${app_name}:`, occurrences[app_name])
     occurrences[app_name]++
 
     return occurrences[app_name]!
@@ -106,7 +107,7 @@ function initLoadMicroAppFn({
     /**
      * @deprecated incrementOccurrence will be removed from here in next major version this shall be handled by the consumer
      */
-    occurrence = occurrence || incrementOccurrence(app.name)
+    occurrence = occurrence || incrementOccurrence(`${app.name}-${props.component_path}`)
 
     function init() {
         if (controller.signal.aborted) {
