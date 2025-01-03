@@ -21,10 +21,12 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
-    const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>(undefined)
-    const [occurrence, setOccurrence] = useState<number | undefined>()
+    const loadedAppRef = useRef<MicroApp | undefined>(undefined)
+    const occurrenceRef = useRef<number | undefined>(undefined)
 
     function update(props: T) {
+        const occurrence = occurrenceRef.current
+        const loadedApp = loadedAppRef.current
         if (loadedApp?.update) {
             loadedApp.update({ props, occurrence, occurence: occurrence })
         } else {
@@ -64,9 +66,9 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             containerRef,
             setLoadedApp: (lApp, occurrence) => {
                 loadedapp = lApp
-                setLoadedApp(lApp)
                 setLoading(false)
-                setOccurrence(occurrence)
+                loadedAppRef.current = lApp
+                occurrenceRef.current = occurrence
             },
             controller: currentController,
         })
