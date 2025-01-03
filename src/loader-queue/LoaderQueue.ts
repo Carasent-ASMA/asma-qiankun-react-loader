@@ -103,7 +103,10 @@ function initLoadMicroAppFn({
     setLoadedApp: (lApp: MicroApp, occurrence?: number) => void
     controller: AbortController
 }) {
-    //incrementOccurrence(app.name)
+    /**
+     * @deprecated incrementOccurrence will be removed from here in next major version this shall be handled by the consumer
+     */
+    occurrence = occurrence || incrementOccurrence(app.name)
 
     function init() {
         if (controller.signal.aborted) {
