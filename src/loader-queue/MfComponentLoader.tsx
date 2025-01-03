@@ -29,7 +29,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
         const loadedApp = loadedAppRef.current
         console.log('update props called! Inside MfComponentLoader', { props, occurrence, loadedApp })
         if (loadedApp?.update) {
-            loadedApp.update({ props, occurrence, occurence: occurrence })
+            loadedApp.update({ ...props, occurrence, occurence: occurrence })
         } else {
             console.warn('loadedApp is undefined or loadedApp.update is undefined, update props was not called!', {
                 loadedApp,
