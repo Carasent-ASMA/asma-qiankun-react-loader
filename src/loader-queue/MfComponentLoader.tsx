@@ -16,11 +16,27 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     className,
     placeholder = 'mf original',
     LoaderComponent,
+    passUpdateFunctionToParent,
     controller: _controller,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
+    const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>(undefined)
 
+    function update(props: T) {
+        if (loadedApp?.update) {
+            loadedApp.update(props)
+        } else {
+            console.warn('loadedApp is undefined or loadedApp.update is undefined, update props was not called!', {
+                loadedApp,
+            })
+        }
+    }
+    useEffect(() => {
+        if (passUpdateFunctionToParent) {
+            passUpdateFunctionToParent(update) // Pass the internal function to the parent
+        }
+    }, [passUpdateFunctionToParent])
     useEffect(() => {
         if (!app) {
             console.error('No micro app was provided! microapp components wont render!`')
@@ -47,6 +63,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             containerRef,
             setLoadedApp: (lApp) => {
                 loadedapp = lApp
+                setLoadedApp(lApp)
                 setLoading(false)
             },
             controller: currentController,
