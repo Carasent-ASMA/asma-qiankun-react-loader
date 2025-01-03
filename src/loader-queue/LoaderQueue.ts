@@ -96,7 +96,7 @@ function initLoadMicroAppFn({
     app: { name: string; entry: Entry }
     props: IMicroAppProps<{}>
     containerRef: RefObject<HTMLDivElement>
-    setLoadedApp: (lApp: MicroApp) => void
+    setLoadedApp: (params: { lApp: MicroApp; occurrence?: number }) => void
     controller: AbortController
 }) {
     function init() {
@@ -127,7 +127,7 @@ function initLoadMicroAppFn({
             },
         )
 
-        setLoadedApp(loaded_app)
+        setLoadedApp({ lApp: loaded_app, occurrence })
 
         return loaded_app
     }

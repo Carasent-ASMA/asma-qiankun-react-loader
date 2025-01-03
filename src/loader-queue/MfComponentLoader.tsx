@@ -22,10 +22,11 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
     const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>(undefined)
+    const [occurrence, setOccurrence] = useState<number | undefined>()
 
     function update(props: T) {
         if (loadedApp?.update) {
-            loadedApp.update(props)
+            loadedApp.update({ props, occurrence, occurence: occurrence })
         } else {
             console.warn('loadedApp is undefined or loadedApp.update is undefined, update props was not called!', {
                 loadedApp,
@@ -61,10 +62,11 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             app,
             props,
             containerRef,
-            setLoadedApp: (lApp) => {
+            setLoadedApp: ({ lApp, occurrence }) => {
                 loadedapp = lApp
                 setLoadedApp(lApp)
                 setLoading(false)
+                setOccurrence(occurrence)
             },
             controller: currentController,
         })
