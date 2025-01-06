@@ -2,13 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import type { MicroApp, ObjectType } from 'asma-qiankun'
 
-import {
-    type IMfComponentLoader,
-    incrementOccurrence,
-    initLoadMicroApp,
-    //LoaderQueue,
-    removeLoaderToResolve,
-} from './LoaderQueue'
+import { incrementOccurrence, initLoadMicroApp, removeLoaderToResolve, type IMfComponentLoader } from './LoaderQueue'
 
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,
@@ -21,26 +15,23 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
-    const loadedAppRef = useRef<MicroApp | undefined>(undefined)
-    const occurrenceRef = useRef<number | undefined>(undefined)
+    const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>()
+    const occurrenceRef = useRef<number | undefined>(0)
 
-    function update(props: T) {
-        const occurrence = occurrenceRef.current
-        const loadedApp = loadedAppRef.current
-        console.log('update props called! Inside MfComponentLoader', { ...props, occurrence, loadedApp })
-        if (loadedApp?.update) {
-            loadedApp.update({ ...props, occurrence, occurence: occurrence })
-        } else {
-            console.warn('loadedApp is undefined or loadedApp.update is undefined, update props was not called!', {
-                loadedApp,
-            })
-        }
-    }
     useEffect(() => {
-        if (passUpdateFunctionToParent) {
-            passUpdateFunctionToParent(update) // Pass the internal function to the parent
+        const update = loadedApp?.update
+
+        if (!update || !passUpdateFunctionToParent || loading) return
+
+        const updateFn = (local_props: T) => {
+            const occurrence = occurrenceRef.current
+
+            update({ ...local_props, occurence: occurrence, occurrence })
         }
-    }, [passUpdateFunctionToParent])
+
+        passUpdateFunctionToParent(updateFn)
+    }, [passUpdateFunctionToParent, loadedApp, loading])
+
     useEffect(() => {
         if (!app) {
             console.error('No micro app was provided! microapp components wont render!`')
@@ -55,9 +46,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
             currentController = new AbortController()
         }
 
-        const occurrence = incrementOccurrence(`${app.name}-${props.component_path}`)
-
-        occurrenceRef.current = occurrence
+        occurrenceRef.current = incrementOccurrence(app.name + props.component_path)
 
         let loadedapp: MicroApp | undefined //= loadASMAMicroAPP(app, props, containerRef)
 
@@ -65,14 +54,16 @@ function MfComponentLoaderInternal<T extends ObjectType>({
 
         initLoadMicroApp({
             app,
-            occurrence,
-            props,
+            props: {
+                ...props,
+                occurence: occurrenceRef.current,
+                occurrence: occurrenceRef.current,
+            },
             containerRef,
-            setLoadedApp: (lApp, occurrence) => {
-                console.log('setLoadedApp called! Inside MfComponentLoader', { occurrence })
+            setLoadedApp: (lApp) => {
                 loadedapp = lApp
                 setLoading(false)
-                loadedAppRef.current = lApp
+                setLoadedApp(lApp)
             },
             controller: currentController,
         })
@@ -92,6 +83,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init() */
 
             loadedapp?.unmount()
+
             removeLoaderToResolve(app.name, props.component_path)
         }
     }, [])

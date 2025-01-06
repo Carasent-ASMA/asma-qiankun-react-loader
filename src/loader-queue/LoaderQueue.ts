@@ -34,14 +34,26 @@ export const LoaderQueue: IAppLoaderQueue = {}
 
 export const occurrences: Record<string, number> = {}
 
-export function incrementOccurrence(app_name: string) {
-    if (!occurrences[app_name]) {
-        occurrences[app_name] = 0
-    }
-    console.log(`incrementOccurrence - ${app_name}:`, occurrences[app_name])
-    occurrences[app_name]++
+export function getOccurrence(app_name: string) {
+    const occurrence = occurrences[app_name]
 
-    return occurrences[app_name]!
+    if (typeof occurrence === 'number') {
+        return occurrence
+    }
+
+    return
+}
+
+export function incrementOccurrence(app_name: string) {
+    const occurrence = occurrences[app_name]
+
+    if (typeof occurrence === 'number') {
+        occurrences[app_name]++
+        return occurrences[app_name]
+    }
+
+    occurrences[app_name] = 0
+    return 0
 }
 
 function getNewLoaderIndex(app_name: string, loaderId: string): number {
@@ -100,20 +112,13 @@ function initLoadMicroAppFn({
     containerRef,
     setLoadedApp,
     controller,
-    occurrence,
 }: {
     app: { name: string; entry: Entry }
-    occurrence: number
     props: IMicroAppProps<{}>
     containerRef: RefObject<HTMLDivElement>
-    setLoadedApp: (lApp: MicroApp, occurrence?: number) => void
+    setLoadedApp: (lApp: MicroApp) => void
     controller: AbortController
 }) {
-    /**
-     * @deprecated incrementOccurrence will be removed from here in next major version this shall be handled by the consumer
-     */
-    occurrence = occurrence || incrementOccurrence(`${app.name}-${props.component_path}`)
-
     function init() {
         if (controller.signal.aborted) {
             console.warn('init signal aborted: ', controller.signal.aborted, 'reason: ', controller.signal.reason)
@@ -121,7 +126,6 @@ function initLoadMicroAppFn({
             removeLoaderToResolve(app.name, props.component_path)
             return
         }
-        //const occurrence = occurrences[app.name]
 
         const loaded_app = loadASMAMicroAPP(
             {
@@ -129,26 +133,22 @@ function initLoadMicroAppFn({
                 entry: app.entry,
                 container: containerRef.current!,
 
-                props: {
-                    ...props,
-                    /**
-                     * @deprecated remove in next major version
-                     */
-                    occurence: occurrence,
-                    occurrence,
-                },
+                props,
             },
             {
                 fetch: (input: RequestInfo | URL, init?: RequestInit) => realWindow.fetch(input, { ...init }),
             },
         )
 
-        console.log('Inside initLoadMicroApp:', occurrence)
-        setLoadedApp(loaded_app, occurrence)
+        setLoadedApp(loaded_app)
         return loaded_app
     }
 
-    registerLoader(app.name, { id: props.component_path, init, controller })
+    registerLoader(app.name, {
+        id: props.component_path,
+        init,
+        controller,
+    })
 
     if (!areLoadersInProcess[app.name]) {
         resolveLoaders(app.name)
