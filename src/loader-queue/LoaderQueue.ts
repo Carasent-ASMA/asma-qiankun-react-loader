@@ -44,11 +44,16 @@ export function incrementOccurrence(app_name: string) {
     return occurrences[app_name]!
 }
 
+function getNewLoaderIndex(app_name: string, loaderId: string): number {
+    return LoaderQueue?.[app_name]?.filter((loader) => loader.id.split('___')[1] === loaderId)?.length || 0
+}
+
 function registerLoader(app_name: string, loader: ILoader) {
     if (!LoaderQueue[app_name]) {
         LoaderQueue[app_name] = []
     }
 
+    loader.id = `${getNewLoaderIndex(app_name, loader.id)}___${loader.id}`
     LoaderQueue[app_name]!.push(loader)
 }
 
