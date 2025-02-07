@@ -13,21 +13,20 @@ export function removeLoaderToResolve(app_name: string, loader_to_resolve_id: st
 }
 
 async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader) {
-    micro_app_loader.micro_app = micro_app_loader.init()
+    try {
+        micro_app_loader.micro_app = micro_app_loader.init()
 
-    micro_app_loader.controller.signal.onabort = async () => {
-        await micro_app_loader.micro_app?.unmount()
+        micro_app_loader.controller.signal.onabort = async () => {
+            await micro_app_loader.micro_app?.unmount()
+            removeLoaderToResolve(app_name, micro_app_loader.id)
+        }
 
+        await micro_app_loader.micro_app?.bootstrapPromise
+    } catch (error) {
+        console.error('resolveMicroAppLoader error: ', error)
+    } finally {
         removeLoaderToResolve(app_name, micro_app_loader.id)
     }
-
-    await micro_app_loader.micro_app?.bootstrapPromise
-        .catch(() => {
-            removeLoaderToResolve(app_name, micro_app_loader.id)
-        })
-        .finally(() => {
-            removeLoaderToResolve(app_name, micro_app_loader.id)
-        })
 }
 
 export const LoaderQueue: IAppLoaderQueue = {}
@@ -136,7 +135,8 @@ function initLoadMicroAppFn({
                 props,
             },
             {
-                fetch: (input: RequestInfo | URL, init?: RequestInit) => realWindow.fetch(input, { ...init }),
+                fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+                    realWindow.fetch(input, { ...init, signal: controller.signal }),
             },
         )
 
