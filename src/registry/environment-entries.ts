@@ -19,6 +19,7 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-activities': '/app/activities/',
         'asma-app-crm': '/app/crm/',
         'asma-app-layouts': '/app/layouts/',
+        'asma-app-storage': '/app/storage/',
     },
     local: {
         'adopus-app-directory': 'http://localhost:3100',
@@ -33,5 +34,6 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-activities': 'http://localhost:3010',
         'asma-app-crm': 'http://localhost:3011',
         'asma-app-layouts': 'http://localhost:3012',
+        'asma-app-storage': 'http://localhost:3013',
     },
 }
