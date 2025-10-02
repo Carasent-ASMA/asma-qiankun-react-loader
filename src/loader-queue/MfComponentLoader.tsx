@@ -19,6 +19,19 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     const occurrenceRef = useRef<number | undefined>(0)
 
     useEffect(() => {
+        if (!loadedApp || loading) return
+
+        if (loadedApp?.update) {
+            loadedApp?.update({
+                ...props,
+                occurence: occurrenceRef.current,
+                occurrence: occurrenceRef.current,
+                container: containerRef.current!,
+            })
+        }
+    }, [props, loadedApp, loading])
+
+    useEffect(() => {
         const update = loadedApp?.update
 
         if (!update || !passUpdateFunctionToParent || loading) return
