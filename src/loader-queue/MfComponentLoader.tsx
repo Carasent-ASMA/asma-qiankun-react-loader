@@ -4,6 +4,8 @@ import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import { incrementOccurrence, initLoadMicroApp, removeLoaderToResolve, type IMfComponentLoader } from './LoaderQueue'
 
+import './index.css'
+
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,
     props,
