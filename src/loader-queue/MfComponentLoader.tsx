@@ -105,7 +105,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     // return <div>pending... {placeholder}</div>
     // }
     return (
-        <div ref={containerRef} className={`__asma_microapp_wrapper ${className || ''}`.trim()}>
+        <div ref={containerRef} className={`__asma_microapp_wrapper__ ${className || ''}`.trim()}>
             {(loading && ((LoaderComponent && <LoaderComponent />) || null)) || placeholder}
         </div>
     )
