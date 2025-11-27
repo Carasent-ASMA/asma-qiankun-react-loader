@@ -82,7 +82,6 @@ interface ILoader {
 export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
     app?: { name: string; entry: Entry }
     props: IMicroAppProps<T>
-    passUpdateFunctionToParent?: (updatePropsFn: (props: T) => void) => void
     placeholder?: string
     LoaderComponent?: () => JSX.Element
     controller?: AbortController

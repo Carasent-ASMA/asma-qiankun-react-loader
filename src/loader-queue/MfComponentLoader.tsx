@@ -12,7 +12,6 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     className,
     placeholder = 'mf original',
     LoaderComponent,
-    passUpdateFunctionToParent,
     controller: _controller,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -20,32 +19,18 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>()
     const occurrenceRef = useRef<number | undefined>(0)
 
-    useEffect(() => {
-        if (!loadedApp || loading) return
-
-        if (loadedApp?.update) {
-            loadedApp?.update({
-                ...props,
-                occurence: occurrenceRef.current,
-                occurrence: occurrenceRef.current,
-                container: containerRef.current!,
-            })
-        }
-    }, [props, loadedApp, loading])
+    const mounted = loadedApp?.getStatus() === 'MOUNTED'
 
     useEffect(() => {
-        const update = loadedApp?.update
+        if (!loadedApp || loading || !mounted || !loadedApp?.update) return
 
-        if (!update || !passUpdateFunctionToParent || loading) return
-
-        const updateFn = (local_props: T) => {
-            const occurrence = occurrenceRef.current
-
-            update({ ...local_props, occurence: occurrence, occurrence })
-        }
-
-        passUpdateFunctionToParent(updateFn)
-    }, [passUpdateFunctionToParent, loadedApp, loading])
+        loadedApp?.update({
+            ...props,
+            occurence: occurrenceRef.current,
+            occurrence: occurrenceRef.current,
+            container: containerRef.current!,
+        })
+    }, [props, loadedApp, loading, mounted])
 
     useEffect(() => {
         if (!app) {
