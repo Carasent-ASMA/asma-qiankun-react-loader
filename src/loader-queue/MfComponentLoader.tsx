@@ -10,6 +10,7 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     app,
     props,
     className,
+    disableWrapperStyles,
     placeholder = 'mf original',
     LoaderComponent,
     controller: _controller,
@@ -88,11 +89,17 @@ function MfComponentLoaderInternal<T extends ObjectType>({
         }
     }, [])
 
+    let wrapperClass = className
+
+    if (!disableWrapperStyles) {
+        wrapperClass = '__asma_microapp_wrapper__' + (wrapperClass ? ` ${wrapperClass}` : '')
+    }
+
     // if (pending) {
     // return <div>pending... {placeholder}</div>
     // }
     return (
-        <div ref={containerRef} className={`__asma_microapp_wrapper__ ${className || ''}`.trim()}>
+        <div ref={containerRef} className={wrapperClass}>
             {(loading && ((LoaderComponent && <LoaderComponent />) || null)) || placeholder}
         </div>
     )

@@ -83,6 +83,7 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     app?: { name: string; entry: Entry }
     props: IMicroAppProps<T>
     placeholder?: string
+    disableWrapperStyles?: boolean
     LoaderComponent?: () => JSX.Element
     controller?: AbortController
 }
