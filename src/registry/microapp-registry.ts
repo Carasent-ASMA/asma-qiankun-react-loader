@@ -94,6 +94,13 @@ const __MICROAPP_REGISTRY = {
         loader: () => {},
         activeRule: 'component-only',
     },
+    'asma-app-qnreditor': {
+        name: '',
+        entry: '',
+        container: '#micro-app',
+        loader: () => {},
+        activeRule: 'component-only',
+    },
 }
 
 export type IMicroAppRegistryNames = keyof typeof __MICROAPP_REGISTRY

@@ -20,6 +20,7 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-crm': '/app/crm/',
         'asma-app-layouts': '/app/layouts/',
         'asma-app-storage': '/app/storage/',
+        'asma-app-qnreditor': '/app/qnreditor/',
     },
     local: {
         'adopus-app-directory': 'http://localhost:3100',
@@ -35,5 +36,6 @@ export const registry_envs: Record<envs, Record<IMicroAppRegistryNames, string>>
         'asma-app-crm': 'http://localhost:3011',
         'asma-app-layouts': 'http://localhost:3012',
         'asma-app-storage': 'http://localhost:3013',
+        'asma-app-qnreditor': 'http://localhost:3014',
     },
 }

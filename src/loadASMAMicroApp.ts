@@ -47,6 +47,7 @@ async function setLoadMicroAppLoc(
                 'asma-app-activities',
                 'asma-app-layouts',
                 'asma-app-storage',
+                'asma-app-qnreditor',
             ],
             devtools: dev_mode,
             registry_urls,
