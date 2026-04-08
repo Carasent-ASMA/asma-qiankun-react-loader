@@ -1,5 +1,5 @@
 import type { Entry, MicroApp } from 'asma-qiankun'
-import remove from 'lodash-es/remove'
+import { remove } from 'lodash-es'
 import type { RefObject } from 'react'
 import { loadASMAMicroAPP } from '../loadASMAMicroApp'
 import { realWindow } from '../registerASMAMicroApps'
@@ -86,6 +86,7 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     disableWrapperStyles?: boolean
     LoaderComponent?: () => JSX.Element
     controller?: AbortController
+    onMounted?: () => void
 }
 
 export type IMicroAppProps<T> = { component_path: string } & T

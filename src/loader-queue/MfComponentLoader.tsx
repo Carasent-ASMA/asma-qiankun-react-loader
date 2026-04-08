@@ -14,13 +14,17 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     placeholder = 'mf original',
     LoaderComponent,
     controller: _controller,
+    onMounted,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
     const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>()
     const occurrenceRef = useRef<number | undefined>(0)
 
-    const mounted = loadedApp?.getStatus() === 'MOUNTED'
+    const status = loadedApp?.getStatus()
+
+    loadedApp?.mountPromise.then(onMounted)
+    const mounted = status === 'MOUNTED'
 
     useEffect(() => {
         if (!loadedApp || loading || !mounted || !loadedApp?.update) return
