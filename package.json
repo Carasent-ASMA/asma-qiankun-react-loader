@@ -28,6 +28,7 @@
     },
     "dependencies": {
         "asma-qiankun": "^1.8.0",
+        "lodash-es": "^4.17.21",
         "qiankun-overrides": "^1.0.1",
         "single-spa": "^5.9.5"
     }
