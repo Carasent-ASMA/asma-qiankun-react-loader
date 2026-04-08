@@ -4,8 +4,7 @@
     "description": "helper functions form asma-qiankun",
     "keywords": [],
     "repository": {
-        "type": "git",
-        "url": "https://avanssoma@dev.azure.com/avanssoma/Arbeidoginkludering/_git/asma-qiankun-react-loader"
+        "url": "https://github.com/Carasent-ASMA/asma-qiankun-react-loader.git"
     },
     "license": "MIT",
     "author": "IE",
