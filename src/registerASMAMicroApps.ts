@@ -23,6 +23,8 @@ export function getAsmaRegistrableApps() {
 }
 
 const islocal = realWindow.location.origin.includes('local') || realWindow.location.origin.includes('127.0.0.1')
+const overrideStoragePrefix = 'import-map-override:'
+const disabledOverridesStorageKey = 'import-map-overrides-disabled'
 
 export function setAsmaRegistrableAppsNew({
     devtools = false,
@@ -83,29 +85,29 @@ async function _setAsmaRegistrableApps(registrable_apps?: IAsmaAppsObject, devto
     }
 
     if (devtools || localStorage.getItem('asma-debug') === 'true') {
-        const element = document.createElement('import-map-overrides-full')
+        // const element = document.createElement('import-map-overrides-full')
 
-        element.setAttribute('show-when-local-storage', 'asma-devtools')
+        // element.setAttribute('show-when-local-storage', 'asma-devtools')
 
         localStorage.setItem('asma-devtools', 'true')
 
-        document.body.appendChild(element)
+        // document.body.appendChild(element)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        await import('qiankun-overrides')
+        // await import('qiankun-overrides')
 
-        const imo:
-            | {
-                  setDefaultMap: (apps: RegistrableApp<{}>[]) => void
-                  getCurrentQiankunMap: () => IAsmaAppsObject | undefined
-              }
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            | undefined = realWindow.importMapOverrides
+        // const imo:
+        //     | {
+        //           setDefaultMap: (apps: RegistrableApp<{}>[]) => void
+        //           getCurrentQiankunMap: () => IAsmaAppsObject | undefined
+        //       }
+        //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //     //@ts-ignore
+        //     | undefined = realWindow.importMapOverrides
 
-        imo?.setDefaultMap(Object.values(registrable_apps))
+        // imo?.setDefaultMap(Object.values(registrable_apps))
 
-        asmaRegistrableApps = imo?.getCurrentQiankunMap()
+        asmaRegistrableApps = getAsmaOverriddenApps(registrable_apps)
     } else {
         localStorage.removeItem('asma-devtools')
 
@@ -128,4 +130,34 @@ export function isEmpty(obj: unknown) {
     }
 
     return !!obj
+}
+
+function getAsmaOverriddenApps(original_apps: IAsmaAppsObject): IAsmaAppsObject {
+    const disabledOverrides = getDisabledOverridesFromStorage()
+
+    Object.entries(original_apps).forEach(([key, app]) => {
+        const appTyped = app as RegistrableApp<{}>
+        if (!disabledOverrides.has(appTyped.name)) {
+            const overrideKey = `${overrideStoragePrefix}${appTyped.name}`
+            const overriddenEntry = localStorage.getItem(overrideKey)
+
+            if (overriddenEntry) {
+                original_apps[key as keyof IAsmaAppsObject].entry = overriddenEntry
+            }
+        }
+    })
+
+    return original_apps
+}
+
+function getDisabledOverridesFromStorage(): Set<string> {
+    try {
+        const raw = localStorage.getItem(disabledOverridesStorageKey)
+        if (!raw) return new Set()
+
+        const parsed = JSON.parse(raw)
+        return Array.isArray(parsed) ? new Set(parsed) : new Set()
+    } catch {
+        return new Set()
+    }
 }
