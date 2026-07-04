@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import { incrementOccurrence, initLoadMicroApp, removeLoaderToResolve, type IMfComponentLoader } from './LoaderQueue'
+import { isEsmMarkedApp, overrideBaseFor, resolveTransport, type Transport } from './esmTransport'
 
-import './index.css'
 
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,
@@ -109,12 +109,57 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     )
 }
 export function MfComponentLoader<T extends ObjectType>(props: IMfComponentLoader<T>) {
+    // ASMA-7544 transport gate — an app that resolves to native-ESM must be mounted via
+    // <EsmWidgetHost> (asma-mfw-esmloader), NEVER through qiankun's import-html-entry: qiankun runs the
+    // entry in the host document, so the ESM build's relative chunk imports resolve against the origin
+    // (`/chunks/…`) instead of `/cdn/<app>/<ver>/chunks/…` → the static server's SPA fallback answers
+    // `index.html` (text/html) → "Expected a JavaScript-or-Wasm module script" MIME failure. This gate
+    // is the app-level counterpart to the dual loader and retires qiankun per app as each ships ESM.
+    //
+    // Synchronous for released (`esm`-marked) apps and for normal qiankun apps (no override) → zero
+    // extra render/round-trip. A one-shot `widgets.json` probe runs ONLY for a dev-overridden app (the
+    // transport-ambiguous case): a real manifest ⇒ ESM (stand down); a 404/SPA-fallback ⇒ a genuine
+    // qiankun dev server ⇒ proceed. Hooks are called unconditionally (before the `!app` guard) per the
+    // Rules of Hooks.
+    const appName = props.app?.name
+    const [transport, setTransport] = useState<Transport | 'checking'>(() =>
+        appName && isEsmMarkedApp(appName) ? 'esm' : appName && overrideBaseFor(appName) ? 'checking' : 'qiankun',
+    )
+    useEffect(() => {
+        if (!appName || transport !== 'checking') return
+        let cancelled = false
+        void resolveTransport(appName).then((t) => {
+            if (!cancelled) setTransport(t)
+        })
+        return () => {
+            cancelled = true
+        }
+    }, [appName, transport])
+
     if (!props.app) {
         console.error(
             `No micro app with path '${props.props.component_path}' was provied! microapp components wont render!`,
         )
 
         return <div>No micro app `adopus-app-directory` was provied!</div>
+    }
+
+    if (transport === 'esm') {
+        // Native-ESM app — <EsmWidgetHost> owns it; qiankun stands down (rendering the same widget here
+        // via import-html-entry is the origin-`/chunks/` bug). No visual gap: the dual loader renders
+        // EsmWidgetHost for the same mount.
+        console.warn(
+            `MfComponentLoader: '${props.app.name}' is native-ESM — skipping qiankun mount (load via EsmWidgetHost / asma-mfw-esmloader).`,
+        )
+        return null
+    }
+    if (transport === 'checking') {
+        // Probing a dev-override's widgets.json (dev-only, one round-trip). Show the caller's placeholder.
+        return (
+            <div className={props.className}>
+                {(props.LoaderComponent && <props.LoaderComponent />) || props.placeholder || null}
+            </div>
+        )
     }
 
     return <MfComponentLoaderInternal app={props.app} {...props} />

@@ -136,8 +136,12 @@ function initLoadMicroAppFn({
                 props,
             },
             {
-                fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-                    realWindow.fetch(input, { ...init, signal: controller.signal }),
+                // Cast to `typeof fetch`: qiankun's frameworkConfiguration.fetch type intersects with
+                // `typeof fetch`, which @types/node@18.19 gave a required `preconnect` member. We only
+                // ever call it as `fetch(url, init)`, so the cast is safe. (Pre-existing tsc break from
+                // the @types/node bump — unrelated to the ESM transport gate.)
+                fetch: ((input: RequestInfo | URL, init?: RequestInit) =>
+                    realWindow.fetch(input, { ...init, signal: controller.signal })) as typeof fetch,
             },
         )
 
