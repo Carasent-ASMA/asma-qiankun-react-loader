@@ -47,6 +47,8 @@ async function setLoadMicroAppLoc(
                 'asma-app-activities',
                 'asma-app-layouts',
                 'asma-app-storage',
+                'asma-app-editor',
+                // @deprecated — alias during rename window (ASMA-7576 Phase R).
                 'asma-app-qnreditor',
             ],
             devtools: dev_mode,

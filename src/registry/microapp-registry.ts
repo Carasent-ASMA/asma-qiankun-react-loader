@@ -94,6 +94,15 @@ const __MICROAPP_REGISTRY = {
         loader: () => {},
         activeRule: 'component-only',
     },
+    'asma-app-editor': {
+        name: '',
+        entry: '',
+        container: '#micro-app',
+        loader: () => {},
+        activeRule: 'component-only',
+    },
+    // @deprecated — retained as alias during the asma-app-qnreditor → asma-app-editor rename window (ASMA-7576 Phase R).
+    // Remove once all consumer apps are redeployed on the new key (TASK-R08).
     'asma-app-qnreditor': {
         name: '',
         entry: '',
