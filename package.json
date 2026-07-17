@@ -23,7 +23,7 @@
         "@types/react": "^18.2.64",
         "copyfiles": "^2.4.1",
         "prettier": "^3.2.5",
-        "typescript": "^5.4.2"
+        "typescript": "7.0.2"
     },
     "dependencies": {
         "asma-qiankun": "^1.8.0",
