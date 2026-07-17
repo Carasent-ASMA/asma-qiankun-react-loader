@@ -47,8 +47,7 @@ export function incrementOccurrence(app_name: string) {
     const occurrence = occurrences[app_name]
 
     if (typeof occurrence === 'number') {
-        occurrences[app_name]++
-        return occurrences[app_name]
+        return (occurrences[app_name] = occurrence + 1)
     }
 
     occurrences[app_name] = 0
