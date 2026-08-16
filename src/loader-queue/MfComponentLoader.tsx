@@ -4,6 +4,7 @@ import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import { incrementOccurrence, initLoadMicroApp, removeLoaderToResolve, type IMfComponentLoader } from './LoaderQueue'
 import { isEsmMarkedApp, overrideBaseFor, resolveTransport, type Transport } from './esmTransport'
+import { healOverrideIfVersionIsGone } from './overrideSelfHeal'
 
 
 function MfComponentLoaderInternal<T extends ObjectType>({
@@ -128,7 +129,18 @@ export function MfComponentLoader<T extends ObjectType>(props: IMfComponentLoade
     useEffect(() => {
         if (!appName || transport !== 'checking') return
         let cancelled = false
-        void resolveTransport(appName).then((t) => {
+        void resolveTransport(appName).then(async (t) => {
+            // ASMA-7866. The gate has just said "this override is not an ESM build" — but for a
+            // PUBLISHED base that is also exactly what a DELETED version looks like, because the CDN
+            // is the object store itself and answers 403 for any key it does not hold, including a
+            // `widgets.json` that a healthy qiankun version never had either. So before mounting
+            // qiankun against a base that may be gone, check the entry document, which only a live
+            // version serves. If it is provably gone the override is cleared and the page reloads;
+            // there is nothing left for this component to render. The check is deliberately not
+            // skipped on unmount: whether the version exists is a fact about the page, not about
+            // this one widget, and the next mount would only pay for it again.
+            const overrideBase = t === 'qiankun' ? overrideBaseFor(appName) : undefined
+            if (overrideBase && (await healOverrideIfVersionIsGone(appName, overrideBase))) return
             if (!cancelled) setTransport(t)
         })
         return () => {
