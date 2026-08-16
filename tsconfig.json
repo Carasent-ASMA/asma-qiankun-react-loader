@@ -79,5 +79,5 @@
         "useUnknownInCatchVariables": false
     },
     "include": ["src", "src/index.ts"],
-    "exclude": ["node_modules", "lib"]
+    "exclude": ["node_modules", "lib", "**/*.test.ts"]
 }
