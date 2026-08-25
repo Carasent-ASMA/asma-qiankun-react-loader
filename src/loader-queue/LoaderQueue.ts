@@ -17,7 +17,15 @@ async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader
         micro_app_loader.micro_app = micro_app_loader.init()
 
         micro_app_loader.controller.signal.onabort = async () => {
-            await micro_app_loader.micro_app?.unmount()
+            // A broken app rejects here — single-spa refuses to unmount an app it marked
+            // SKIP_BECAUSE_BROKEN — and this handler is not awaited by anyone, so a throw would
+            // surface as one more unhandled rejection and the queue entry would never be removed.
+            // Unmounting is best-effort cleanup; the removal below is the part that must happen.
+            try {
+                await micro_app_loader.micro_app?.unmount()
+            } catch (error) {
+                console.warn(`unmount failed for '${app_name}' — the app was probably already broken`, error)
+            }
             removeLoaderToResolve(app_name, micro_app_loader.id)
         }
 
@@ -86,6 +94,16 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     LoaderComponent?: () => JSX.Element
     controller?: AbortController
     onMounted?: () => void
+    /**
+     * Called once if this widget's qiankun lifecycle fails to bootstrap or mount (ASMA-7853).
+     *
+     * The counterpart to `onMounted`, and the reason it exists: a failure here happens outside the
+     * host's React tree — qiankun mounts imperatively into the container div — so no error boundary
+     * in the host can see it, and until this prop existed the failure reached only `console.error`.
+     * The dual loader (`asma-mfw-esmloader`) passes a handler that renders `<WidgetErrorNotice/>`,
+     * giving the qiankun path the same visible error state the ESM path already had.
+     */
+    onLoadError?: (error: unknown) => void
 }
 
 export type IMicroAppProps<T> = { component_path: string } & T
