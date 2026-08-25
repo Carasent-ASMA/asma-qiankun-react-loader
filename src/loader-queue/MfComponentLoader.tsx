@@ -111,7 +111,10 @@ function MfComponentLoaderInternal<T extends ObjectType>({
                 loader?.micro_app ||
                 LoaderQueue[app.name]?.find((l) => l.id === props.component_path)?.init() */
 
-            loadedapp?.unmount()
+            // Same reason as the abort handler in LoaderQueue: unmounting a widget that never
+            // mounted rejects, and this cleanup runs whenever the host swaps the widget out — which
+            // is exactly what the dual loader does when it replaces a failed widget with its notice.
+            void Promise.resolve(loadedapp?.unmount()).catch(() => {})
 
             removeLoaderToResolve(app.name, props.component_path)
         }

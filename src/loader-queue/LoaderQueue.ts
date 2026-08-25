@@ -17,7 +17,15 @@ async function resolveMicroAppLoader(app_name: string, micro_app_loader: ILoader
         micro_app_loader.micro_app = micro_app_loader.init()
 
         micro_app_loader.controller.signal.onabort = async () => {
-            await micro_app_loader.micro_app?.unmount()
+            // A broken app rejects here — single-spa refuses to unmount an app it marked
+            // SKIP_BECAUSE_BROKEN — and this handler is not awaited by anyone, so a throw would
+            // surface as one more unhandled rejection and the queue entry would never be removed.
+            // Unmounting is best-effort cleanup; the removal below is the part that must happen.
+            try {
+                await micro_app_loader.micro_app?.unmount()
+            } catch (error) {
+                console.warn(`unmount failed for '${app_name}' — the app was probably already broken`, error)
+            }
             removeLoaderToResolve(app_name, micro_app_loader.id)
         }
 
