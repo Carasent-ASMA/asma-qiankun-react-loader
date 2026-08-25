@@ -4,8 +4,8 @@ import type { MicroApp, ObjectType } from 'asma-qiankun'
 
 import { incrementOccurrence, initLoadMicroApp, removeLoaderToResolve, type IMfComponentLoader } from './LoaderQueue'
 import { isEsmMarkedApp, overrideBaseFor, resolveTransport, type Transport } from './esmTransport'
+import { reportFirstMicroAppFailure } from './microAppFailure'
 import { healOverrideIfVersionIsGone } from './overrideSelfHeal'
-
 
 function MfComponentLoaderInternal<T extends ObjectType>({
     app,
@@ -16,16 +16,39 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     LoaderComponent,
     controller: _controller,
     onMounted,
+    onLoadError,
 }: IMfComponentLoader<T>) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
     const [loadedApp, setLoadedApp] = useState<MicroApp | undefined>()
+    const [failed, setFailed] = useState(false)
     const occurrenceRef = useRef<number | undefined>(0)
+    // Held in a ref so the reporting effect depends on `loadedApp` alone: a host that passes an
+    // inline arrow would otherwise re-run it every render and report the same failure repeatedly.
+    const onLoadErrorRef = useRef(onLoadError)
+    onLoadErrorRef.current = onLoadError
 
     const status = loadedApp?.getStatus()
 
-    loadedApp?.mountPromise.then(onMounted)
+    // `.catch` because this runs on every render and would otherwise mint a fresh unhandled
+    // rejection each time for one broken widget. The rejection is REPORTED by the effect below;
+    // here it only needs handling, so the real message is not buried under console noise.
+    loadedApp?.mountPromise.then(onMounted).catch(() => {})
     const mounted = status === 'MOUNTED'
+
+    // ASMA-7853 — carry a failed qiankun lifecycle back into React state. Nothing awaited these
+    // promises before: `resolveMicroAppLoader` logged bootstrap failures and `mountPromise` had no
+    // catch at all, so an app that loaded but registered no lifecycle (the shell hands qiankun a
+    // placeholder whose `mount()` throws by design) left this container showing `placeholder`
+    // forever. An error boundary cannot help — the widget mounts outside the host's render tree.
+    useEffect(() => {
+        if (!loadedApp) return
+        return reportFirstMicroAppFailure(loadedApp, (error) => {
+            console.error(`MfComponentLoader: '${app?.name}#${props.component_path}' failed`, error)
+            setFailed(true)
+            onLoadErrorRef.current?.(error)
+        })
+    }, [loadedApp])
 
     useEffect(() => {
         if (!loadedApp || loading || !mounted || !loadedApp?.update) return
@@ -103,9 +126,12 @@ function MfComponentLoaderInternal<T extends ObjectType>({
     // if (pending) {
     // return <div>pending... {placeholder}</div>
     // }
+    // A failed widget renders nothing here: the container is qiankun's, and leaving the caller's
+    // placeholder in it is what made a dead widget look like a slow one. The visible error state is
+    // the host's — `createDualLoader` renders <WidgetErrorNotice/> from the `onLoadError` above.
     return (
         <div ref={containerRef} className={wrapperClass}>
-            {(loading && ((LoaderComponent && <LoaderComponent />) || null)) || placeholder}
+            {failed ? null : (loading && ((LoaderComponent && <LoaderComponent />) || null)) || placeholder}
         </div>
     )
 }

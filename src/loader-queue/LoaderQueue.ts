@@ -86,6 +86,16 @@ export interface IMfComponentLoader<T> extends Pick<React.HTMLAttributes<HTMLDiv
     LoaderComponent?: () => JSX.Element
     controller?: AbortController
     onMounted?: () => void
+    /**
+     * Called once if this widget's qiankun lifecycle fails to bootstrap or mount (ASMA-7853).
+     *
+     * The counterpart to `onMounted`, and the reason it exists: a failure here happens outside the
+     * host's React tree — qiankun mounts imperatively into the container div — so no error boundary
+     * in the host can see it, and until this prop existed the failure reached only `console.error`.
+     * The dual loader (`asma-mfw-esmloader`) passes a handler that renders `<WidgetErrorNotice/>`,
+     * giving the qiankun path the same visible error state the ESM path already had.
+     */
+    onLoadError?: (error: unknown) => void
 }
 
 export type IMicroAppProps<T> = { component_path: string } & T
