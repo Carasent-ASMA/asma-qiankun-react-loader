@@ -163,8 +163,9 @@ export function MfComponentLoader<T extends ObjectType>(props: IMfComponentLoade
             // PUBLISHED base that is also exactly what a DELETED version looks like, because the CDN
             // is the object store itself and answers 403 for any key it does not hold, including a
             // `widgets.json` that a healthy qiankun version never had either. So before mounting
-            // qiankun against a base that may be gone, check the entry document, which only a live
-            // version serves. If it is provably gone the override is cleared and the page reloads;
+            // qiankun against a base that may be gone, check whether the version serves its entry
+            // document or its widgets.json (ASMA-8735: each kind of live version lacks one). If it
+            // serves neither, provably, the override is cleared and the page reloads;
             // there is nothing left for this component to render. The check is deliberately not
             // skipped on unmount: whether the version exists is a fact about the page, not about
             // this one widget, and the next mount would only pay for it again.
