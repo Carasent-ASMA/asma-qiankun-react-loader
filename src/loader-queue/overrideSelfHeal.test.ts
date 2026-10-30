@@ -10,10 +10,11 @@ import {
     type OverrideHealEnv,
 } from './overrideSelfHeal.ts'
 
-const g = globalThis as { location?: unknown }
+const g = globalThis as { location?: unknown; window?: unknown }
 beforeEach(() => resetSelfHealForTests())
 afterEach(() => {
     delete g.location
+    delete g.window
 })
 
 /**
@@ -80,6 +81,11 @@ describe('isLocalOverrideBase', () => {
 
     it('does not call a relative base local when there is no page to resolve it against', () => {
         assert.equal(isLocalOverrideBase('/cdn/asma-app-chat/pr166/'), false)
+
+        // An opaque origin (sandboxed iframe, file://) reads as the string "null" — no base at all.
+        g.location = { origin: 'null' }
+        assert.equal(isLocalOverrideBase('/cdn/asma-app-chat/pr166/'), false)
+        assert.equal(isLocalOverrideBase('http://localhost:3003/'), true)
     })
 })
 
@@ -136,6 +142,44 @@ describe('healOverrideIfVersionIsGone', () => {
             base: '/cdn/asma-app-chat/pr41/',
         })
         assert.equal(f.reloads, 1)
+    })
+
+    it('neither asks nor heals when the base cannot be resolved at all', async () => {
+        // No answer is no proof — `[].every()` would otherwise read as "everything proved gone".
+        for (const base of ['https://', '/cdn/asma-app-chat/pr41/']) {
+            resetSelfHealForTests()
+            const f = fakeEnv(403)
+            assert.equal(await healOverrideIfVersionIsGone('asma-app-chat', base, f.env), false, base)
+            assert.deepEqual(f.requested, [], base)
+            assert.equal(f.reloads, 0, base)
+        }
+    })
+
+    it('asks the origin rather than the HTTP cache when it runs in the browser', async () => {
+        const inits: (RequestInit | undefined)[] = []
+        const items: Record<string, string> = {}
+        let reloads = 0
+        g.window = {
+            fetch: (_url: string, init?: RequestInit) => {
+                inits.push(init)
+                return Promise.resolve({ status: 403 })
+            },
+            localStorage: {
+                getItem: (k: string) => items[k] ?? null,
+                setItem: (k: string, v: string) => {
+                    items[k] = v
+                },
+            },
+            location: {
+                reload: () => {
+                    reloads++
+                },
+            },
+        }
+        assert.equal(await healOverrideIfVersionIsGone('asma-app-chat', GONE), true)
+        assert.equal(inits.length, 2)
+        for (const init of inits) assert.equal(init?.cache, 'no-store')
+        assert.equal(reloads, 1)
     })
 
     it("asks about the version's own folder even when the base lacks its slash or carries a query", async () => {
