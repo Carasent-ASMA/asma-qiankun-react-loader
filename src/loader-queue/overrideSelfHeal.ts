@@ -9,12 +9,12 @@
  * (`asma-mfw-esmloader`) does this in `EsmWidgetHost`; widgets that still mount through qiankun do
  * not pass through there, which is what this covers.
  *
- * WHY THE ENTRY DOCUMENT AND NOT `widgets.json`
- * The transport gate already probes `<base>widgets.json`, but its answer cannot be reused here: the
- * CDN is the object store itself, which answers 403 for ANY key it does not hold, and a perfectly
- * healthy published QIANKUN version holds no `widgets.json` either. The two cases are
- * indistinguishable on that path. The entry document is the discriminator — a live version serves
- * it, a deleted prefix does not — and it is also exactly what qiankun is about to fetch.
+ * WHY BOTH THE ENTRY DOCUMENT AND `widgets.json` (ASMA-8735)
+ * The CDN is the object store itself, which answers 403 for ANY key it does not hold. A healthy
+ * published QIANKUN version holds no `widgets.json`, and a healthy ESM-only version (chat, consents)
+ * holds no entry document, so neither answer alone separates a live version from a deleted one. A
+ * version is gone only when both are. The transport gate's own `widgets.json` answer cannot stand in
+ * for the second probe: the gate reads a 5xx as "not a manifest" too.
  *
  * WHAT COUNTS AS PROOF
  * Only 404 and 403 (the object store's answer for a missing key, since the anonymous reader has no
@@ -45,7 +45,9 @@ export interface OverrideHealEnv {
 function browserEnv(): OverrideHealEnv {
     const w = (window as unknown as { rawWindow?: typeof window }).rawWindow || window
     return {
-        fetch: (url) => w.fetch(url),
+        // `no-store`: a deleted qiankun-era entry document is cacheable for a day, and a cached 200
+        // would keep a dead override alive that long.
+        fetch: (url) => w.fetch(url, { cache: 'no-store' }),
         storage: w.localStorage,
         reload: () => w.location.reload(),
     }
@@ -54,15 +56,36 @@ function browserEnv(): OverrideHealEnv {
 /**
  * Is this override base a developer's own machine rather than a published version? Parsed as a URL,
  * not matched as a substring — `https://localhost.example.com/` is a published host that merely
- * reads like one.
+ * reads like one. A relative base is on the page's own origin, so it is local exactly when the page
+ * is (ASMA-8735): the overrides dialog writes `/cdn/<app>/<version>/`.
  */
 export function isLocalOverrideBase(base: string): boolean {
+    const hostname = resolveOverrideBase(base)?.hostname
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1'
+}
+
+/** An override base as an absolute URL, a relative one resolved against the page's origin. */
+function resolveOverrideBase(base: string): URL | undefined {
+    // An opaque origin (sandboxed iframe, file://) reads as "null", which is no base to resolve against.
+    const origin = typeof location === 'undefined' || location.origin === 'null' ? undefined : location.origin
     try {
-        const { hostname } = new URL(base, 'http://localhost')
-        return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1'
+        return new URL(base, origin)
     } catch {
-        return false
+        return undefined // malformed, or relative with no page around it
     }
+}
+
+/**
+ * The version's entry document and its `widgets.json`, both asked of the version's own folder — no
+ * query, a trailing slash — because `widgets.json` resolved against `…/pr166` is the parent's.
+ */
+function probeUrlsFor(base: string): string[] {
+    const folder = resolveOverrideBase(base)
+    if (!folder) return []
+    folder.search = ''
+    folder.hash = ''
+    if (!folder.pathname.endsWith('/')) folder.pathname += '/'
+    return [folder.href, new URL('widgets.json', folder).href]
 }
 
 /** Does this response status PROVE the version is gone, as opposed to merely unreachable? */
@@ -84,6 +107,14 @@ function disableOverride(storage: OverrideHealEnv['storage'], appName: string): 
     }
     if (!disabled.includes(appName)) disabled.push(appName)
     storage.setItem(OVERRIDES_DISABLED_KEY, JSON.stringify(disabled))
+}
+
+async function answersAbsent(env: OverrideHealEnv, url: string): Promise<boolean> {
+    try {
+        return provesVersionIsGone((await env.fetch(url)).status)
+    } catch {
+        return false // unreachable is not gone
+    }
 }
 
 /** Only the first heal of a page load reloads; later mounts of other widgets must not pile on. */
@@ -108,13 +139,10 @@ export async function healOverrideIfVersionIsGone(
 ): Promise<boolean> {
     if (healing || isLocalOverrideBase(base)) return false
 
-    let status: number
-    try {
-        status = (await env.fetch(base)).status
-    } catch {
-        return false // unreachable is not gone
-    }
-    if (!provesVersionIsGone(status)) return false
+    const urls = probeUrlsFor(base)
+    if (urls.length === 0) return false // what cannot be asked about cannot be proven gone
+    const answers = await Promise.all(urls.map((url) => answersAbsent(env, url)))
+    if (!answers.every(Boolean)) return false
     if (healing) return false // another widget's probe won the race while this one was in flight
 
     healing = true
